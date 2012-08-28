@@ -24,7 +24,7 @@ module ParseModel
         super
       end
     end
-        
+    
     def fields
       self.class.send(:get_fields)
     end
