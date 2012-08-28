@@ -23,7 +23,13 @@ module ParseModel
       self.class.send(:get_fields)
     end
 
-    module ClassMethods      
+    module ClassMethods
+      # def new(pfobject = nil)
+      #   instance = super.new
+      #   instance.PFObject = pfobject if pfobject
+      #   instance
+      # end
+
       def fields(*args)
         args.each {|arg| field(arg)}
       end
@@ -35,6 +41,33 @@ module ParseModel
       
       def get_fields
         @fields
+      end
+
+      def where(conditions = {}, &callback)
+        query = PFQuery.queryWithClassName(self.to_s)
+
+        conditions.each do |key, value|
+          query.whereKey(key, equalTo: value)
+        end
+
+        query.findObjectsInBackgroundWithBlock (lambda { |items, error|
+          class_items = map_to_class(items)
+          callback.call class_items, error
+        })
+      end
+
+      def map_to_class(pf_items)
+        class_items = []
+        pf_items.each do |item|
+          class_items << self.classify(item)
+        end
+        class_items
+      end
+
+      def classify(item)
+        i = self.new
+        i.PFObject = item
+        i
       end
     end
     
