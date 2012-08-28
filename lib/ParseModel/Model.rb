@@ -42,9 +42,9 @@ module ParseModel
     def attributes
       return @attributes if @attributes
       
-      @attributes = []
+      @attributes = {}
       fields.each do |f|
-        @attributes << getField(f)
+        @attributes[f] = getField(f)
       end
       @attributes
     end

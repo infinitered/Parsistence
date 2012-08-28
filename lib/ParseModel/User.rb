@@ -1,6 +1,6 @@
 module ParseModel
   module User
-    include ParseModel::Model
+    include ::ParseModel::Model
 
     attr_accessor :PFUser
     
@@ -22,6 +22,10 @@ module ParseModel
         users = query.findObjects
         users
       end
+    end
+
+    def self.included(base)
+      base.extend(ClassMethods)
     end
   end
 end
