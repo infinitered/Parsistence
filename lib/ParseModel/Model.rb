@@ -14,15 +14,12 @@ module ParseModel
       elsif RESERVED_KEYS.map {|f| "#{f}="}.include?("#{method}")
         @PFObject.send(method, args.first)
       elsif fields.include?(method)
-        @PFObject.objectForKey(method)
+        getField(method)
       elsif fields.map {|f| "#{f}="}.include?("#{method}")
         method = method.split("=")[0]
-        @PFObject.setObject(args.first, forKey:method)
+        setField(args.first, forKey:method)
       elsif @PFObject.respond_to?(method)
         @PFObject.send(method, *args, &block)
-      else
-        super
-      end
       else
         super
       end
@@ -30,6 +27,32 @@ module ParseModel
         
     def fields
       self.class.send(:get_fields)
+    end
+
+    def getField(field)
+      return @PFObject.objectForKey(field) if fields.include? field
+      raise "Invalid field name #{field} for object #{self.class.to_s}"
+    end
+
+    def setField(field, value)
+      return @PFObject.setObject(value, forKey:field) if fields.include? field
+      raise "Invalid field name #{field} for object #{self.class.to_s}"
+    end
+
+    def attributes
+      return @attributes if @attributes
+      
+      @attributes = []
+      fields.each do |f|
+        @attributes << getField(f)
+      end
+      @attributes
+    end
+
+    def attributes=(hashValue)
+      hashValue.each do |k, v|
+        setField(k, v)
+      end
     end
 
     module ClassMethods
@@ -54,12 +77,12 @@ module ParseModel
         end
 
         query.findObjectsInBackgroundWithBlock (lambda { |items, error|
-          class_items = map_to_class(items)
+          class_items = classifyAll(items)
           callback.call class_items, error
         })
       end
 
-      def map_to_class(pf_items)
+      def classifyAll(pf_items)
         class_items = []
         pf_items.each do |item|
           class_items << self.classify(item)
