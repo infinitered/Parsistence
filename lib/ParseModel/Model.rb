@@ -2,18 +2,27 @@ module ParseModel
   module Model
     attr_accessor :PFObject
     
+    RESERVED_KEYS = []
+
     def initialize
       @PFObject = PFObject.objectWithClassName(self.class.to_s)
     end
     
     def method_missing(method, *args, &block)
-      if fields.include?(method)
+      if RESERVED_KEYS.include?(method)
+        @PFObject.send(method)
+      elsif RESERVED_KEYS.map {|f| "#{f}="}.include?("#{method}")
+        @PFObject.send(method, args.first)
+      elsif fields.include?(method)
         @PFObject.objectForKey(method)
       elsif fields.map {|f| "#{f}="}.include?("#{method}")
         method = method.split("=")[0]
         @PFObject.setObject(args.first, forKey:method)
       elsif @PFObject.respond_to?(method)
         @PFObject.send(method, *args, &block)
+      else
+        super
+      end
       else
         super
       end
@@ -24,12 +33,6 @@ module ParseModel
     end
 
     module ClassMethods
-      # def new(pfobject = nil)
-      #   instance = super.new
-      #   instance.PFObject = pfobject if pfobject
-      #   instance
-      # end
-
       def fields(*args)
         args.each {|arg| field(arg)}
       end
@@ -68,6 +71,23 @@ module ParseModel
         i = self.new
         i.PFObject = item
         i
+      end
+
+      def method_missing(method, *args, &block)
+        # TODO: Make this handle more than one "find_by" condition.
+        if method.start_with?("find_by_")
+          attribute = method.gsub("find_by_", "")
+          conditions = {}
+          conditions[attribute] = *args.first
+          self.where(conditions, block)
+        elsif method.start_with?("find_all_by_")
+          attribute = method.gsub("find_all_by_", "")
+          conditions = {}
+          conditions[attribute] = *args.first
+          self.where(conditions, block)
+        else
+          super
+        end
       end
     end
     
