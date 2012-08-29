@@ -165,19 +165,6 @@ module ParseModel
         @presenceValidations << field
       end
 
-      def where(conditions = {}, &callback)
-        query = PFQuery.queryWithClassName(self.to_s)
-
-        conditions.each do |key, value|
-          query.whereKey(key, equalTo: value)
-        end
-
-        query.findObjectsInBackgroundWithBlock (lambda { |items, error|
-          class_items = items.map! { |item| self.new(item) }
-          callback.call class_items, error
-        })
-      end
-
       def method_missing(method, *args, &block)
         # TODO: Make this handle more than one "find_by" condition.
         if method.start_with?("find_by_")
