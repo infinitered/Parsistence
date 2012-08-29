@@ -17,7 +17,7 @@ module ParseModel
         getField(method)
       elsif fields.map {|f| "#{f}="}.include?("#{method}")
         method = method.split("=")[0]
-        setField(args.first, forKey:method)
+        setField(method, args.first)
       elsif @PFObject.respond_to?(method)
         @PFObject.send(method, *args, &block)
       else
