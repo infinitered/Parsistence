@@ -69,6 +69,12 @@ module ParseModel
         @fields
       end
 
+      # TODO: set relations
+
+      def get_relations
+        @relations
+      end
+
       def where(conditions = {}, &callback)
         query = PFQuery.queryWithClassName(self.to_s)
 
