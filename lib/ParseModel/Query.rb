@@ -23,7 +23,7 @@ module ParseModel
     attr_accessor :klass
 
     def initialize
-      @conditions = @negativeConditions = @ltConditions = @gtConditions = []
+      @conditions = @negativeConditions = @ltConditions = @gtConditions = @lteConditions = @gteConditions = []
       @limit = @offset = nil
     end
 
@@ -42,6 +42,12 @@ module ParseModel
       @gtConditions.each do |key, value|
         query.whereKey(key, greaterThan: value)
       end
+      @lteConditions.each do |key, value|
+        query.whereKey(key, lessThanOrEqualTo: value)
+      end
+      @gteConditions.each do |key, value|
+        query.whereKey(key, greaterThanOrEqualTo: value)
+      end
       first = true
       @order.each do |field, direction|
         if first
@@ -57,15 +63,26 @@ module ParseModel
       query.limit = @limit if @limit
       query.skip = @offset if @offset
 
-      fetchAll(query) if @limit.nil? || @limit > 1
-
+      if @limit == 1
+        fetchOne(query, callback) 
+      else
+        fetchAll(query, callback)
+      end
+      
       self
     end
 
-    def fetchAll(query)
+    def fetchOne(query, &callback)
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
-        modelItems = items.map! { |item| self.klass.new(item) }
+        modelItems = items.map! { |item| self.klass.new(item) } if items
         callback.call modelItems, error
+      })
+    end
+
+    def fetchAll(query, &callback)
+      query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
+        modelItem = self.klass.new(item) if item
+        callback.call modelItem, error
       })
     end
 
@@ -134,5 +151,20 @@ module ParseModel
       end
       self
     end
+
+    def lte(fields = {})
+      fields.each do |field, value|
+        @lteConditions << {"#{field}": value}
+      end
+      self
+    end
+
+    def gte(fields = {})
+      fields.each do |field, value|
+        @gteConditions << {"#{field}": value}
+      end
+      self
+    end
+
   end
 end
