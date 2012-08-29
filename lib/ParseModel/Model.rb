@@ -76,6 +76,8 @@ module ParseModel
 
     def save
       # before_save
+
+      #  should be presence_validations.each ...
       self.attributes.each do |field, value|
         raise "#{field} can't be nil" if presence_validations.include?(field) && value.nil? || value == ""
       end
