@@ -164,23 +164,6 @@ module ParseModel
         @presenceValidations ||= []
         @presenceValidations << field
       end
-
-      def method_missing(method, *args, &block)
-        # TODO: Make this handle more than one "find_by" condition.
-        if method.start_with?("find_by_")
-          attribute = method.gsub("find_by_", "")
-          conditions = {}
-          conditions[attribute] = *args.first
-          self.where(conditions, block)
-        elsif method.start_with?("find_all_by_")
-          attribute = method.gsub("find_all_by_", "")
-          conditions = {}
-          conditions[attribute] = *args.first
-          self.where(conditions, block)
-        else
-          super
-        end
-      end
     end
     
     def self.included(base)

@@ -12,9 +12,29 @@ module ParseModel
         q
       end
       def limit(offset, number = nil)
-        q = ParseModel::Query.new
+        q = query
         q.limit(offset, number)
         q
+      end
+
+      #QUERY_STUBS = [ :where, :limit,  :first ]
+
+      def method_missing(method, *args, &block)
+        
+
+        if method.start_with?("find_by_")
+          attribute = method.gsub("find_by_", "")
+          conditions = {}
+          conditions[attribute] = *args.first
+          self.where(conditions, block)
+        elsif method.start_with?("find_all_by_")
+          attribute = method.gsub("find_all_by_", "")
+          conditions = {}
+          conditions[attribute] = *args.first
+          self.where(conditions, block)
+        else
+          super
+        end
       end
     end
   end
@@ -27,7 +47,7 @@ module ParseModel
       @limit = @offset = nil
     end
 
-    def fetch(&callback)
+    def run(&callback)
       query = PFQuery.queryWithClassName(self.klass.to_s)
 
       @conditions.each do |key, value|
@@ -88,20 +108,19 @@ module ParseModel
 
     # Query methods
     def where(conditions = {}, &callback)
-      conditions.each do |c, v|
-        @conditions["#{c}"] = v
-      end
-      query(callback)
+      eq(conditions)
+      run(callback)
       self
     end
 
     def all(&callback)
-
+      run(callback)
       self
     end
 
     def first(&callback)
-
+      limit(0, 1)
+      run(callback)
       self
     end
 
@@ -117,7 +136,7 @@ module ParseModel
       self
     end
 
-    def order(fields)
+    def order(fields = {})
       fields.each do |field, direction|
         @order["#{field}"] = direction
       end
