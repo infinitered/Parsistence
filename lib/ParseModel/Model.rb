@@ -11,8 +11,17 @@ module ParseModel
         self.PFObject = PFObject.objectWithClassName(self.class.to_s)
       end
 
+      # setupRelations unless pf
+
       self
     end
+
+    # This code is to correct for a bug where relations aren't initialized when creating a new instance
+    # def setupRelations
+    #   relations.each do |r|
+    #     self.send("#{r}=", @PFObject.relationforKey(r))
+    #   end
+    # end
     
     def method_missing(method, *args, &block)
       method = method.to_sym
@@ -61,6 +70,7 @@ module ParseModel
 
     def setRelation(field, value)
       value = value.PFObject if value.respond_to? :PFObject # unwrap object
+      # return setField(field, value) # This SHOULD work
       
       relation = @PFObject.relationforKey(field)
       
@@ -69,13 +79,11 @@ module ParseModel
     end
 
     def attributes
-      @attributes ||= begin
-        attributes = {}
-        fields.each do |f|
-          attributes[f] = getField(f)
-        end
-        attributes
+      attributes = {}
+      fields.each do |f|
+        attributes[f] = getField(f)
       end
+      @attributes = attributes
     end
 
     def attributes=(hashValue)
