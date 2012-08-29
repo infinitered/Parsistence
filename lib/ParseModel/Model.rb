@@ -15,6 +15,9 @@ module ParseModel
         @PFObject.send(method, args.first)
       elsif fields.include?(method)
         getField(method)
+      elsif relations.map {|r| "#{r}=".include?("#{method}")}
+        method = method.split("=")[0]
+        setRelation(method, args.first)
       elsif fields.map {|f| "#{f}="}.include?("#{method}")
         method = method.split("=")[0]
         setField(method, args.first)
@@ -29,14 +32,30 @@ module ParseModel
       self.class.send(:get_fields)
     end
 
+    def relations
+      self.class.send(:get_relations)
+    end
+
+    def presence_validations
+      self.class.send(:get_presence_validations)
+    end
+
     def getField(field)
       return @PFObject.objectForKey(field) if fields.include? field
       raise "Invalid field name #{field} for object #{self.class.to_s}"
     end
 
     def setField(field, value)
+      return false if value.nil?
       return @PFObject.setObject(value, forKey:field) if fields.include? field
       raise "Invalid field name #{field} for object #{self.class.to_s}"
+    end
+
+    def setRelation(field, value)
+      return false if value.nil? 
+      value = value.PFObject if value.respond_to? :PFObject
+      return @PFObject.setObject(value, forKey:field) # if relations.include? field # Not working same code as ^^
+      raise "Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def attributes
@@ -55,6 +74,15 @@ module ParseModel
       end
     end
 
+    def save
+      # before_save
+      self.attributes.each do |field, value|
+        raise "#{field} can't be nil" if presence_validations.include?(field) && value.nil? || value == ""
+      end
+      @PFObject.save
+      # after_save
+    end
+
     module ClassMethods
       def fields(*args)
         args.each {|arg| field(arg)}
@@ -69,10 +97,30 @@ module ParseModel
         @fields
       end
 
-      # TODO: set relations
+      def relations(*args)
+        args.each { |arg| relation(arg)}
+      end
+
+      def relation(name)
+        @relations ||= []
+        @relations << name
+      end
 
       def get_relations
         @relations
+      end
+
+      def validates_presence_of(*args)
+        args.each {|arg| validate_presence(arg)}
+      end
+
+      def get_presence_validations
+        @presence_validations
+      end
+
+      def validate_presence(field)
+        @presence_validations ||= []
+        @presence_validations << field
       end
 
       def where(conditions = {}, &callback)
