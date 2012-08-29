@@ -72,14 +72,14 @@ module ParseModel
       self
     end
 
-    def fetchOne(query, &callback)
+    def fetchAll(query, &callback)
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
         modelItems = items.map! { |item| self.klass.new(item) } if items
         callback.call modelItems, error
       })
     end
 
-    def fetchAll(query, &callback)
+    def fetchOne(query, &callback)
       query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
         modelItem = self.klass.new(item) if item
         callback.call modelItem, error
@@ -89,7 +89,7 @@ module ParseModel
     # Query methods
     def where(conditions = {}, &callback)
       conditions.each do |c, v|
-        @conditions << {c, v}
+        @conditions["#{c}"] = v
       end
       query(callback)
       self
@@ -119,49 +119,49 @@ module ParseModel
 
     def order(fields)
       fields.each do |field, direction|
-        @order << {"#{field}": direction}
+        @order["#{field}"] = direction
       end
       self
     end
 
     def eq(fields = {})
       fields.each do |field, value|
-        @conditions << {"#{field}": value}
+        @conditions["#{field}"] = value
       end
       self
     end
 
     def notEq(fields = {})
       fields.each do |field, value|
-        @negativeConditions << {"#{field}": value}
+        @negativeConditions["#{field}"] = value
       end
       self
     end
 
     def lt(fields = {})
       fields.each do |field, value|
-        @ltConditions << {"#{field}": value}
+        @ltConditions["#{field}"] = value
       end
       self
     end
 
     def gt(fields = {})
       fields.each do |field, value|
-        @gtConditions << {"#{field}": value}
+        @gtConditions["#{field}"] = value
       end
       self
     end
 
     def lte(fields = {})
       fields.each do |field, value|
-        @lteConditions << {"#{field}": value}
+        @lteConditions["#{field}"] = value
       end
       self
     end
 
     def gte(fields = {})
       fields.each do |field, value|
-        @gteConditions << {"#{field}": value}
+        @gteConditions["#{field}"] = value
       end
       self
     end
