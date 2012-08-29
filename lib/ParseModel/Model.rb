@@ -2,29 +2,32 @@ module ParseModel
   module Model
     attr_accessor :PFObject, :errors
     
-    RESERVED_KEYS = []
+    RESERVED_KEYS = [:objectId]
 
-    def initialize
-      @PFObject = PFObject.objectWithClassName(self.class.to_s)
+    def initialize(pf=nil)
+      if pf
+        self.PFObject = pf
+      else
+        self.PFObject = PFObject.objectWithClassName(self.class.to_s)
+      end
+
+      self
     end
     
     def method_missing(method, *args, &block)
-      if RESERVED_KEYS.include?(method)
-        @PFObject.send(method)
-      elsif RESERVED_KEYS.map {|f| "#{f}="}.include?("#{method}")
-        @PFObject.send(method, args.first)
-      elsif fields.include?(method)
-        getField(method)
+      method = method.to_sym
+      if fields.include?(method)
+        return getField(method)
       elsif relations.include?(method)
-        getRelation(method)
-      elsif relations.map {|r| "#{r}=".include?("#{method}")}
+        return getRelation(method)
+      elsif relations.map {|r| "#{r}=".include?(method)}
         method = method.split("=")[0]
-        setRelation(method, args.first)
-      elsif fields.map {|f| "#{f}="}.include?("#{method}")
+        return setRelation(method, args.first)
+      elsif fields.map {|f| "#{f}="}.include?(method)
         method = method.split("=")[0]
-        setField(method, args.first)
+        return setField(method, args.first)
       elsif @PFObject.respond_to?(method)
-        @PFObject.send(method, *args, &block)
+        return @PFObject.send(method, *args, &block)
       else
         super
       end
@@ -38,26 +41,16 @@ module ParseModel
       self.class.send(:get_relations)
     end
 
-    def presenceValidations
-      self.class.send(:get_presenceValidations)
-    end
-
-    def validateField(field, value)
-      @errors ||= {}
-      @errors[field] = "#{field} can't be blank" if presenceValidations.include?(field) && value.nil? || value == ""
-    end
-
-    def errorForField(field)
-      @errors[field] || false
-    end
-
     def getField(field)
-      return @PFObject.objectForKey(field) if fields.include? field.to_sym
+      field = field.to_sym
+      return @PFObject.send(field) if RESERVED_KEYS.include?(field)
+      return @PFObject[field] if fields.include? field
       raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
     end
 
     def setField(field, value)
-      return @PFObject.setObject(value, forKey:field) if fields.include? field.to_sym
+      return @PFObject.send("#{field}=", value) if RESERVED_KEYS.include?(field)
+      return @PFObject[field] = value if fields.include? field.to_sym
       raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
     end
 
@@ -76,13 +69,13 @@ module ParseModel
     end
 
     def attributes
-      return @attributes if @attributes
-      
-      @attributes = {}
-      fields.each do |f|
-        @attributes[f] = getField(f)
+      @attributes ||= begin
+        attributes = {}
+        fields.each do |f|
+          attributes[f] = getField(f)
+        end
+        attributes
       end
-      @attributes
     end
 
     def attributes=(hashValue)
@@ -94,10 +87,10 @@ module ParseModel
     def save
       saved = false
       unless before_save == false
-        #  should be presenceValidations.each ...
         self.attributes.each do |field, value|
           validateField field, value
         end
+
         saved = @PFObject.save
         after_save if saved
       end
@@ -106,6 +99,21 @@ module ParseModel
 
     def before_save; end
     def after_save; end
+
+    # Validations
+    def presenceValidations
+      self.class.send(:get_presenceValidations)
+    end
+
+    def validateField(field, value)
+      @errors ||= {}
+      @errors[field] = "#{field} can't be blank" if presenceValidations.include?(field) && value.nil? || value == ""
+    end
+
+    def errorForField(field)
+      @errors[field] || false
+    end
+
 
     module ClassMethods
       def fields(*args)
@@ -121,8 +129,6 @@ module ParseModel
       def get_fields
         @fields
       end
-
-
 
       def relations(*args)
         args.each { |arg| relation(arg)}
@@ -159,23 +165,9 @@ module ParseModel
         end
 
         query.findObjectsInBackgroundWithBlock (lambda { |items, error|
-          class_items = classifyAll(items)
+          class_items = items.map! { |item| self.new(item) }
           callback.call class_items, error
         })
-      end
-
-      def classifyAll(pf_items)
-        class_items = []
-        pf_items.each do |item|
-          class_items << self.classify(item)
-        end
-        class_items
-      end
-
-      def classify(item)
-        i = self.new
-        i.PFObject = item
-        i
       end
 
       def method_missing(method, *args, &block)
