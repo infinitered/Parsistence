@@ -1,6 +1,6 @@
 module ParseModel
   module Model
-    attr_accessor :PFObject
+    attr_accessor :PFObject, :errors
     
     RESERVED_KEYS = []
 
@@ -15,6 +15,8 @@ module ParseModel
         @PFObject.send(method, args.first)
       elsif fields.include?(method)
         getField(method)
+      elsif relations.include?(method)
+        getRelation(method)
       elsif relations.map {|r| "#{r}=".include?("#{method}")}
         method = method.split("=")[0]
         setRelation(method, args.first)
@@ -36,26 +38,41 @@ module ParseModel
       self.class.send(:get_relations)
     end
 
-    def presence_validations
-      self.class.send(:get_presence_validations)
+    def presenceValidations
+      self.class.send(:get_presenceValidations)
+    end
+
+    def validateField(field, value)
+      @errors ||= {}
+      @errors[field] = "#{field} can't be blank" if presenceValidations.include?(field) && value.nil? || value == ""
+    end
+
+    def errorForField(field)
+      @errors[field] || false
     end
 
     def getField(field)
-      return @PFObject.objectForKey(field) if fields.include? field
-      raise "Invalid field name #{field} for object #{self.class.to_s}"
+      return @PFObject.objectForKey(field) if fields.include? field.to_sym
+      raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
     end
 
     def setField(field, value)
-      return false if value.nil?
-      return @PFObject.setObject(value, forKey:field) if fields.include? field
-      raise "Invalid field name #{field} for object #{self.class.to_s}"
+      return @PFObject.setObject(value, forKey:field) if fields.include? field.to_sym
+      raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
+    end
+
+    def getRelation(field)
+      return @PFObject.objectForKey(field) if relations.include? field.to_sym
+      raise "ParseModel Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def setRelation(field, value)
-      return false if value.nil? 
-      value = value.PFObject if value.respond_to? :PFObject
-      return @PFObject.setObject(value, forKey:field) # if relations.include? field # Not working same code as ^^
-      raise "Invalid relation name #{field} for object #{self.class.to_s}"
+      value = value.PFObject if value.respond_to? :PFObject # unwrap object
+      
+      relation = @PFObject.relationforKey(field)
+      
+      return relation.addObject(value) if relations.include? field.to_sym
+      raise "ParseModel Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def attributes
@@ -75,15 +92,20 @@ module ParseModel
     end
 
     def save
-      # before_save
-
-      #  should be presence_validations.each ...
-      self.attributes.each do |field, value|
-        raise "#{field} can't be nil" if presence_validations.include?(field) && value.nil? || value == ""
+      saved = false
+      unless before_save == false
+        #  should be presenceValidations.each ...
+        self.attributes.each do |field, value|
+          validateField field, value
+        end
+        saved = @PFObject.save
+        after_save if saved
       end
-      @PFObject.save
-      # after_save
+      saved
     end
+
+    def before_save; end
+    def after_save; end
 
     module ClassMethods
       def fields(*args)
@@ -91,13 +113,16 @@ module ParseModel
       end
     
       def field(name)
-        @fields ||= []
-        @fields << name
+        @fields ||= [:objectId]
+        @fields << name.to_sym
+        @fields.uniq!
       end
       
       def get_fields
         @fields
       end
+
+
 
       def relations(*args)
         args.each { |arg| relation(arg)}
@@ -105,7 +130,8 @@ module ParseModel
 
       def relation(name)
         @relations ||= []
-        @relations << name
+        @relations << name.to_sym
+        @relations.uniq!
       end
 
       def get_relations
@@ -116,13 +142,13 @@ module ParseModel
         args.each {|arg| validate_presence(arg)}
       end
 
-      def get_presence_validations
-        @presence_validations
+      def get_presenceValidations
+        @presenceValidations
       end
 
       def validate_presence(field)
-        @presence_validations ||= []
-        @presence_validations << field
+        @presenceValidations ||= []
+        @presenceValidations << field
       end
 
       def where(conditions = {}, &callback)
