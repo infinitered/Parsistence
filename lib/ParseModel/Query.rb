@@ -1,7 +1,7 @@
 module ParseModel
   module Model
     module ClassMethods
-      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
+      QUERY_STUBS = [ :fetch, :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
 
       def method_missing(method, *args, &block)
         if method == :limit
@@ -88,19 +88,19 @@ module ParseModel
       query
     end
 
-    def run(&callback)
-      query = createQuery
-      
+    def fetch(&callback)
       if @limit && @limit == 1
-        fetchOne(query, &callback) 
+        fetchOne(&callback) 
       else
-        fetchAll(query, &callback)
+        fetchAll(&callback)
       end
       
       self
     end
-    
-    def fetchAll(query, &callback)
+
+    def fetchAll(&callback)
+      query = createQuery
+      
       myKlass = self.klass
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
         modelItems = items.map! { |item| myKlass.new(item) } if items
@@ -108,7 +108,10 @@ module ParseModel
       })
     end
 
-    def fetchOne(query, &callback)
+    def fetchOne(&callback)
+      limit(0, 1)
+      query = createQuery
+      
       myKlass = self.klass
       query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
         modelItem = myKlass.new(item) if item
@@ -119,18 +122,18 @@ module ParseModel
     # Query methods
     def where(*conditions, &callback)
       eq(conditions.first)
-      run(&callback)
+      fetch(&callback)
       nil
     end
 
     def all(&callback)
-      run(&callback)
+      fetch(&callback)
       nil
     end
 
     def first(&callback)
       limit(0, 1)
-      run(&callback)
+      fetch(&callback)
       nil
     end
     
