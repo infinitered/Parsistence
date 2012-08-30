@@ -53,7 +53,7 @@ Queries use a somewhat different pattern than ActiveRecord but are relatively fa
 Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(0, 25).fetch do |cars, error|
   if cars
     cars.each do |car|
-      # You have an instance of "Car" here. If you want to access the PFObject, just do `car.PFObject` like normal.
+      # `car` is an instance of your `Car` model here.
     end
   end
 end
@@ -65,12 +65,19 @@ Chain multiple conditions together, even the same condition type multiple times,
 (note: each condition can take multiple comma-separated fields and values)
 
 **eq:** Check if equal the passed in values.
+
 **notEq:** Check if NOT equal to the passed in values.
+
 **gt:** Check if greater than the passed in values.
+
 **lt:** Check if less than the passed in values.
+
 **gte:** Check if greater or equal to than the passed in values.
+
 **lte:** Check if less than or equal to the passed in values.
+
 **order:** Order by one or more fields. Specify :asc or :desc.
+
 **limit:** Limit is slightly different...it takes either one argument (limit) or two (offset, limit).
 
 ```ruby
