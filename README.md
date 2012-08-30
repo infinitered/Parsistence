@@ -50,7 +50,7 @@ users.map {|u| u.objectId}.include?(user.objectId) #=> true
 Queries use a somewhat different pattern than ActiveRecord but are relatively familiar.
 
 ```ruby
-Car.eq(license: "ABC-123", model: "Camry").gt(year: 2005, horsepower: 100).order(year: :desc, model: :asc).limit(0, 25).fetch do |cars, error|
+Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(0, 25).fetch do |cars, error|
   if cars
     cars.each do |car|
       # You have an instance of "Car" here. If you want to access the PFObject, just do `car.PFObject` like normal.
