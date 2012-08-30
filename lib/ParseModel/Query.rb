@@ -30,39 +30,53 @@ module ParseModel
     attr_accessor :klass
 
     def initialize
-      @conditions = @negativeConditions = @ltConditions = @gtConditions = @lteConditions = @gteConditions = {}
-      @limit = @offset = nil
+      @conditions = {}
+      @negativeConditions = {}
+      @ltConditions = {}
+      @gtConditions = {}
+      @lteConditions = {}
+      @gteConditions = {}
       @order = {}
+      @limit = nil
+      @offset = nil
     end
 
     def createQuery
       query = PFQuery.queryWithClassName(self.klass.to_s)
       
       @conditions.each do |key, value|
+        # $stderr.puts "Setting Conditions"
         query.whereKey(key, equalTo: value)
       end
       @negativeConditions.each do |key, value|
+        # $stderr.puts "Setting negativeConditions"
         query.whereKey(key, notEqualTo: value)
       end
       @ltConditions.each do |key, value|
+        # $stderr.puts "Setting ltConditions"
         query.whereKey(key, lessThan: value)
       end
       @gtConditions.each do |key, value|
+        # $stderr.puts "Setting gtConditions"
         query.whereKey(key, greaterThan: value)
       end
       @lteConditions.each do |key, value|
+        # $stderr.puts "Setting lteConditions"
         query.whereKey(key, lessThanOrEqualTo: value)
       end
       @gteConditions.each do |key, value|
+        # $stderr.puts "Setting gteConditions"
         query.whereKey(key, greaterThanOrEqualTo: value)
       end
       first = true
       @order.each do |field, direction|
         if first
+          # $stderr.puts "Setting order first"
           query.orderByAscending(field) if direction && direction == :asc
           query.orderByDescending(field) if direction && direction == :desc
           first = false
         else
+          # $stderr.puts "Setting order again"
           query.addAscendingOrder(field) if direction && direction == :asc
           query.addDescendingOrder(field) if direction && direction == :desc
         end
@@ -72,18 +86,6 @@ module ParseModel
       query.skip = @offset if @offset
 
       query
-    end
-
-    def showQuery
-      $stderr.puts "Conditions: #{@conditions.to_s}"
-      $stderr.puts "negativeConditions: #{@negativeConditions.to_s}"
-      $stderr.puts "ltConditions: #{@ltConditions.to_s}"
-      $stderr.puts "gtConditions: #{@gtConditions.to_s}"
-      $stderr.puts "lteConditions: #{@lteConditions.to_s}"
-      $stderr.puts "gteConditions: #{@gteConditions.to_s}"
-      $stderr.puts "order: #{@order.to_s}"
-      $stderr.puts "limit: #{@limit.to_s}"
-      $stderr.puts "offset: #{@offset.to_s}"
     end
 
     def run(&callback)
@@ -97,7 +99,7 @@ module ParseModel
       
       self
     end
-
+    
     def fetchAll(query, &callback)
       myKlass = self.klass
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
@@ -107,16 +109,16 @@ module ParseModel
     end
 
     def fetchOne(query, &callback)
+      myKlass = self.klass
       query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
-        $stderr.puts "Fetched one!"
-        modelItem = self.klass.new(item) if item
+        modelItem = myKlass.new(item) if item
         callback.call modelItem, error
       })
     end
 
     # Query methods
     def where(*conditions, &callback)
-      eq(conditions)
+      eq(conditions.first)
       run(&callback)
       nil
     end
@@ -130,6 +132,18 @@ module ParseModel
       limit(0, 1)
       run(&callback)
       nil
+    end
+    
+    def showQuery
+      $stderr.puts "Conditions: #{@conditions.to_s}"
+      $stderr.puts "negativeConditions: #{@negativeConditions.to_s}"
+      $stderr.puts "ltConditions: #{@ltConditions.to_s}"
+      $stderr.puts "gtConditions: #{@gtConditions.to_s}"
+      $stderr.puts "lteConditions: #{@lteConditions.to_s}"
+      $stderr.puts "gteConditions: #{@gteConditions.to_s}"
+      $stderr.puts "order: #{@order.to_s}"
+      $stderr.puts "limit: #{@limit.to_s}"
+      $stderr.puts "offset: #{@offset.to_s}"
     end
 
     # Query parameter methods
