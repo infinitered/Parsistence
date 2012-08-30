@@ -1,39 +1,26 @@
 module ParseModel
   module Model
     module ClassMethods
-      def query
-        q = ParseModel::Query.new
-        q.klass = self
-      end
-
-      def where(conditions = {}, &callback)
-        q = query
-        q.where(conditions, callback)
-        q
-      end
-      def limit(offset, number = nil)
-        q = query
-        q.limit(offset, number)
-        q
-      end
-
-      #QUERY_STUBS = [ :where, :limit,  :first ]
+      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
 
       def method_missing(method, *args, &block)
-        
-
-        if method.start_with?("find_by_")
+        if method == :limit
+          return self.limit(args.first) if args.length == 1
+          return self.limit(args.first, args.last)
+        elsif QUERY_STUBS.include? method.to_sym
+          q = ParseModel::Query.new
+          q.klass = self
+          return q.send(method, args.first, &block) if block
+          return q.send(method, args.first)
+        elsif method.start_with?("find_by_")
           attribute = method.gsub("find_by_", "")
-          conditions = {}
-          conditions[attribute] = *args.first
-          self.where(conditions, block)
+          cond[attribute] = args.first
+          return self.limit(1).where(cond, block)
         elsif method.start_with?("find_all_by_")
-          attribute = method.gsub("find_all_by_", "")
-          conditions = {}
-          conditions[attribute] = *args.first
-          self.where(conditions, block)
+          # attribute = method.gsub("find_all_by_", "")
+          # cond[attribute] = args.first
+          # return self.where(cond, block)
         else
-          super
         end
       end
     end
@@ -43,13 +30,14 @@ module ParseModel
     attr_accessor :klass
 
     def initialize
-      @conditions = @negativeConditions = @ltConditions = @gtConditions = @lteConditions = @gteConditions = []
+      @conditions = @negativeConditions = @ltConditions = @gtConditions = @lteConditions = @gteConditions = {}
       @limit = @offset = nil
+      @order = {}
     end
 
-    def run(&callback)
+    def createQuery
       query = PFQuery.queryWithClassName(self.klass.to_s)
-
+      
       @conditions.each do |key, value|
         query.whereKey(key, equalTo: value)
       end
@@ -83,45 +71,65 @@ module ParseModel
       query.limit = @limit if @limit
       query.skip = @offset if @offset
 
-      if @limit == 1
-        fetchOne(query, callback) 
+      query
+    end
+
+    def showQuery
+      $stderr.puts "Conditions: #{@conditions.to_s}"
+      $stderr.puts "negativeConditions: #{@negativeConditions.to_s}"
+      $stderr.puts "ltConditions: #{@ltConditions.to_s}"
+      $stderr.puts "gtConditions: #{@gtConditions.to_s}"
+      $stderr.puts "lteConditions: #{@lteConditions.to_s}"
+      $stderr.puts "gteConditions: #{@gteConditions.to_s}"
+      $stderr.puts "order: #{@order.to_s}"
+      $stderr.puts "limit: #{@limit.to_s}"
+      $stderr.puts "offset: #{@offset.to_s}"
+    end
+
+    def run(&callback)
+      query = createQuery
+      
+      if @limit && @limit == 1
+        fetchOne(query, &callback) 
       else
-        fetchAll(query, callback)
+        fetchAll(query, &callback)
       end
       
       self
     end
 
     def fetchAll(query, &callback)
+      myKlass = self.klass
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
-        modelItems = items.map! { |item| self.klass.new(item) } if items
+        modelItems = items.map! { |item| myKlass.new(item) } if items
         callback.call modelItems, error
       })
     end
 
     def fetchOne(query, &callback)
       query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
+        $stderr.puts "Fetched one!"
         modelItem = self.klass.new(item) if item
         callback.call modelItem, error
       })
     end
 
     # Query methods
-    def where(conditions = {}, &callback)
+    def where(*conditions, &callback)
       eq(conditions)
-      run(callback)
-      self
+      run(&callback)
+      nil
     end
 
     def all(&callback)
-      run(callback)
-      self
+      run(&callback)
+      nil
     end
 
     def first(&callback)
       limit(0, 1)
-      run(callback)
-      self
+      run(&callback)
+      nil
     end
 
     # Query parameter methods
@@ -137,50 +145,50 @@ module ParseModel
     end
 
     def order(fields = {})
-      fields.each do |field, direction|
-        @order["#{field}"] = direction
+      fields.each do |field|
+        @order.merge! field
       end
       self
     end
 
-    def eq(fields = {})
-      fields.each do |field, value|
-        @conditions["#{field}"] = value
+    def eq(*fields)
+      fields.each do |field|
+        @conditions.merge! field
       end
       self
     end
 
-    def notEq(fields = {})
-      fields.each do |field, value|
-        @negativeConditions["#{field}"] = value
+    def notEq(*fields)
+      fields.each do |field|
+        @negativeConditions.merge! field
       end
       self
     end
 
-    def lt(fields = {})
-      fields.each do |field, value|
-        @ltConditions["#{field}"] = value
+    def lt(*fields)
+      fields.each do |field|
+        @ltConditions.merge! field
       end
       self
     end
 
-    def gt(fields = {})
-      fields.each do |field, value|
-        @gtConditions["#{field}"] = value
+    def gt(*fields)
+      fields.each do |field|
+        @gtConditions.merge! field
       end
       self
     end
 
-    def lte(fields = {})
-      fields.each do |field, value|
-        @lteConditions["#{field}"] = value
+    def lte(*fields)
+      fields.each do |field|
+        @lteConditions.merge! field
       end
       self
     end
 
-    def gte(fields = {})
-      fields.each do |field, value|
-        @gteConditions["#{field}"] = value
+    def gte(*fields)
+      fields.each do |field|
+        @gteConditions.merge! field
       end
       self
     end
