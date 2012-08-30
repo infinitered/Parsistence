@@ -77,6 +77,28 @@ Chain multiple conditions together, even the same condition type multiple times,
 results.map! {|result| Post.new(result)}
 ```
 
+### Relationships
+
+Define your relationships in the Parse.com dashboard and also in your models.
+
+```ruby
+class Post
+  include ParseModel::Model
+
+  fields :title, :body, :author
+
+  relations :author
+end
+
+Author.where(name: "Jamon Holmgren").fetchOne do |fetchedAuthor, error|
+  p = Post.new
+  p.title = "Awesome Readme"
+  p.body = "Read this first!"
+  p.author = fetchedAuthor
+  p.save
+end
+```
+
 
 ## Installation
 
