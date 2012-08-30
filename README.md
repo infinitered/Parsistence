@@ -50,7 +50,7 @@ users.map {|u| u.objectId}.include?(user.objectId) #=> true
 Queries use a somewhat different pattern than ActiveRecord but are relatively familiar.
 
 ```ruby
-Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(0, 25).fetch do |cars, error|
+Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(25).fetch do |cars, error|
   if cars
     cars.each do |car|
       # `car` is an instance of your `Car` model here.
