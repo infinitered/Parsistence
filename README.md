@@ -39,11 +39,11 @@ user.email = "adelevie@gmail.com"
 user.password = "foobar"
 user.signUp
 
-users = User.all # for more User query methods, see: https://parse.com/questions/why-does-querying-for-a-user-create-a-second-user-class 
+users = User.all
 users.map {|u| u.objectId}.include?(user.objectId) #=> true
 ```
 
-`ParseModel::User` delegates to `PFUser` in a very similar fashion as `ParseModel::Model` delegates to `PFOBject`.
+`ParseModel::User` delegates to `PFUser` in a very similar fashion as `ParseModel::Model` delegates to `PFOBject`. `ParseModel::User` includes `ParseModel::Model`, in fact.
 
 ### Queries
 
