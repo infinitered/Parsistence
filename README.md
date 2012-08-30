@@ -47,7 +47,7 @@ users.map {|u| u.objectId}.include?(user.objectId) #=> true
 
 ### Queries
 
-Queries use a somewhat different pattern than ActiveRecord but are relatively familiar.
+Queries use a somewhat different pattern than ActiveRecord but are relatively familiar. They are most like persistence.js.
 
 ```ruby
 Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(25).fetch do |cars, error|
@@ -79,10 +79,6 @@ Chain multiple conditions together, even the same condition type multiple times,
 **order:** Order by one or more fields. Specify :asc or :desc.
 
 **limit:** Limit is slightly different...it takes either one argument (limit) or two (offset, limit).
-
-```ruby
-results.map! {|result| Post.new(result)}
-```
 
 ### Relationships
 
