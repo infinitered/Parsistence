@@ -61,7 +61,7 @@ end
 
 Chain multiple conditions together, even the same condition type multiple times, then run `fetch` to execute the query. Pass in a block with two fields to receive the data.
 
-**Available Conditions:**
+####Available Conditions
 (note: each condition can take multiple comma-separated fields and values)
 
 **eq:** Check if equal the passed in values.
