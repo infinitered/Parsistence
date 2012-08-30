@@ -47,15 +47,31 @@ users.map {|u| u.objectId}.include?(user.objectId) #=> true
 
 ### Queries
 
-For now, just use Parse's native methods:
+Queries use a somewhat different pattern than ActiveRecord but are relatively familiar.
 
 ```ruby
-query = PFQuery.queryWithClassName("Post")
-query.whereKey("title", equalTo:"Why RubyMotion Is Better Than Objective-C")
-results = query.findObjects
+Car.eq(license: "ABC-123", model: "Camry").gt(year: 2005, horsepower: 100).order(year: :desc, model: :asc).limit(0, 25).fetch do |cars, error|
+  if cars
+    cars.each do |car|
+      # You have an instance of "Car" here. If you want to access the PFObject, just do `car.PFObject` like normal.
+    end
+  end
+end
 ```
 
-Note that this will return an `Array` of `PFObjects`, not `ParseModel::Model` objects. To convert, just pass the `PFObject` instance into `ParseModel::Model#new`:
+Chain multiple conditions together, even the same condition type multiple times, then run `fetch` to execute the query. Pass in a block with two fields to receive the data.
+
+**Available Conditions:**
+(note: each condition can take multiple comma-separated fields and values)
+
+**eq:** Check if equal the passed in values.
+**notEq:** Check if NOT equal to the passed in values.
+**gt:** Check if greater than the passed in values.
+**lt:** Check if less than the passed in values.
+**gte:** Check if greater or equal to than the passed in values.
+**lte:** Check if less than or equal to the passed in values.
+**order:** Order by one or more fields. Specify :asc or :desc.
+**limit:** Limit is slightly different...it takes either one argument (limit) or two (offset, limit).
 
 ```ruby
 results.map! {|result| Post.new(result)}
