@@ -39,33 +39,38 @@ module ParseModel
       @order = {}
       @limit = nil
       @offset = nil
+      @includes = []
     end
 
     def createQuery
       query = PFQuery.queryWithClassName(self.klass.to_s)
+      $stderr.puts @includes
+      @includes.each do |include|
+        query.includeKey(include)
+      end
       
       @conditions.each do |key, value|
-        # $stderr.puts "Setting Conditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, equalTo: value)
       end
       @negativeConditions.each do |key, value|
-        # $stderr.puts "Setting negativeConditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, notEqualTo: value)
       end
       @ltConditions.each do |key, value|
-        # $stderr.puts "Setting ltConditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, lessThan: value)
       end
       @gtConditions.each do |key, value|
-        # $stderr.puts "Setting gtConditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, greaterThan: value)
       end
       @lteConditions.each do |key, value|
-        # $stderr.puts "Setting lteConditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, lessThanOrEqualTo: value)
       end
       @gteConditions.each do |key, value|
-        # $stderr.puts "Setting gteConditions"
+        value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, greaterThanOrEqualTo: value)
       end
       first = true
@@ -150,7 +155,6 @@ module ParseModel
     end
 
     # Query parameter methods
-
     def limit(offset, number = nil)
       if number.nil?
         number = offset
@@ -161,7 +165,7 @@ module ParseModel
       self
     end
 
-    def order(fields = {})
+    def order(*fields)
       fields.each do |field|
         @order.merge! field
       end
@@ -210,5 +214,10 @@ module ParseModel
       self
     end
 
+    def includes(*fields)
+      fields.each do |field|
+        @includes << field
+      end
+    end
   end
 end
