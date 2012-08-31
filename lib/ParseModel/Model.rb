@@ -149,7 +149,7 @@ module ParseModel
       end
 
       def get_relations
-        @relations
+        @relations ||= []
       end
 
       def validates_presence_of(*args)
@@ -157,7 +157,7 @@ module ParseModel
       end
 
       def get_presenceValidations
-        @presenceValidations
+        @presenceValidations ||= []
       end
 
       def validate_presence(field)
