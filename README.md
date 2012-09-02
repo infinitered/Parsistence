@@ -1,8 +1,8 @@
 # About
 
 Parsistence provides an Active Record pattern to your Parse models on RubyMotion. 
-It's an early fork from ParseModel but goes a different direction with its 
-implementation
+It's an early fork from [ParseModel](https://github.com/adelevie/ParseModel) by
+Alan deLevie but goes a different direction with its implementation.
 
 ## Usage
 
