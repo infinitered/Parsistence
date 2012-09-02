@@ -1,4 +1,4 @@
-module ParseModel
+module Parsistence
   module Model
     attr_accessor :PFObject, :errors
     
@@ -54,18 +54,18 @@ module ParseModel
       field = field.to_sym
       return @PFObject.send(field) if RESERVED_KEYS.include?(field)
       return @PFObject[field] if fields.include? field
-      raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
+      raise "Parsistence Exception: Invalid field name #{field} for object #{self.class.to_s}"
     end
 
     def setField(field, value)
       return @PFObject.send("#{field}=", value) if RESERVED_KEYS.include?(field)
       return @PFObject[field] = value if fields.include? field.to_sym
-      raise "ParseModel Exception: Invalid field name #{field} for object #{self.class.to_s}"
+      raise "Parsistence Exception: Invalid field name #{field} for object #{self.class.to_s}"
     end
 
     def getRelation(field)
       return @PFObject.objectForKey(field) if relations.include? field.to_sym
-      raise "ParseModel Exception: Invalid relation name #{field} for object #{self.class.to_s}"
+      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def setRelation(field, value)
@@ -75,7 +75,7 @@ module ParseModel
       relation = @PFObject.relationforKey(field)
       
       return relation.addObject(value) if relations.include? field.to_sym
-      raise "ParseModel Exception: Invalid relation name #{field} for object #{self.class.to_s}"
+      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def attributes

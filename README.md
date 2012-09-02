@@ -1,6 +1,8 @@
 # About
 
-ParseModel provides an Active Record pattern to your Parse models on RubyMotion.
+Parsistence provides an Active Record pattern to your Parse models on RubyMotion. 
+It's an early fork from ParseModel but goes a different direction with its 
+implementation
 
 ## Usage
 
@@ -8,7 +10,7 @@ Create a model:
 
 ```ruby
 class Post
-  include ParseModel::Model
+  include Parsistence::Model
 
   fields :title, :body, :author
 end
@@ -24,13 +26,13 @@ p.body = "trololol"
 p.saveEventually
 ```
 
-`ParseModel::Model` objects will `respond_to?` to all methods available to [`PFObject`](https://parse.com/docs/ios/api/Classes/PFObject.html) in the Parse iOS SDK. You can also access the `PFObject` instance directly with, you guessed it, `ParseModel::Model#PFObject`.
+`Parsistence::Model` objects will `respond_to?` to all methods available to [`PFObject`](https://parse.com/docs/ios/api/Classes/PFObject.html) in the Parse iOS SDK. You can also access the `PFObject` instance directly with, you guessed it, `Parsistence::Model#PFObject`.
 
 ### Users
 
 ```ruby
 class User
-  include ParseModel::User
+  include Parsistence::User
 end
 
 user = User.new
@@ -43,7 +45,7 @@ users = User.all
 users.map {|u| u.objectId}.include?(user.objectId) #=> true
 ```
 
-`ParseModel::User` delegates to `PFUser` in a very similar fashion as `ParseModel::Model` delegates to `PFOBject`. `ParseModel::User` includes `ParseModel::Model`, in fact.
+`Parsistence::User` delegates to `PFUser` in a very similar fashion as `Parsistence::Model` delegates to `PFOBject`. `Parsistence::User` includes `Parsistence::Model`, in fact.
 
 ### Queries
 
@@ -86,7 +88,7 @@ Define your relationships in the Parse.com dashboard and also in your models.
 
 ```ruby
 class Post
-  include ParseModel::Model
+  include Parsistence::Model
 
   fields :title, :body, :author
 
@@ -105,9 +107,9 @@ end
 
 ## Installation
 
-Either `gem install ParseModel` then `require 'ParseModel'` in your `Rakefile`, OR
+Either `gem install Parsistence` then `require 'Parsistence'` in your `Rakefile`, OR
 
-`gem "ParseModel"` in your Gemfile. ([Instructions for Bundler setup with Rubymotion)](http://thunderboltlabs.com/posts/using-bundler-with-rubymotion)
+`gem "Parsistence"` in your Gemfile. ([Instructions for Bundler setup with Rubymotion)](http://thunderboltlabs.com/posts/using-bundler-with-rubymotion)
 
 Somewhere in your code, such as `app/app_delegate.rb` set your API keys:
 

@@ -1,6 +1,6 @@
-module ParseModel
+module Parsistence
   module User
-    include ::ParseModel::Model
+    include ::Parsistence::Model
 
     attr_accessor :PFUser
     

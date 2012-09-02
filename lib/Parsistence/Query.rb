@@ -1,4 +1,4 @@
-module ParseModel
+module Parsistence
   module Model
     module ClassMethods
       QUERY_STUBS = [ :fetch, :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
@@ -8,7 +8,7 @@ module ParseModel
           return self.limit(args.first) if args.length == 1
           return self.limit(args.first, args.last)
         elsif QUERY_STUBS.include? method.to_sym
-          q = ParseModel::Query.new
+          q = Parsistence::Query.new
           q.klass = self
           return q.send(method, args.first, &block) if block
           return q.send(method, args.first)
