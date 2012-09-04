@@ -21,6 +21,10 @@ module Parsistence
         users = query.findObjects
         users
       end
+
+      def currentUser
+        self.PFObject.currentUser
+      end
     end
 
     def self.included(base)
