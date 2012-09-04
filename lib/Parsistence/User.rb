@@ -23,7 +23,7 @@ module Parsistence
       end
 
       def currentUser
-        self.PFObject.currentUser
+        PFUser.currentUser
       end
     end
 
