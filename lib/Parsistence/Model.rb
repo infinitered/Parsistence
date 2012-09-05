@@ -27,6 +27,8 @@ module Parsistence
       method = method.to_sym
       if fields.include?(method)
         return getField(method)
+      elsif fields.include?("#{method}=")
+        return setField(method, args.first)
       elsif relations.include?(method)
         return getRelation(method)
       elsif relations.map {|r| "#{r}=".include?(method)}
@@ -85,8 +87,8 @@ module Parsistence
 
     def attributes=(hashValue)
       hashValue.each do |k, v|
-        next if v.nil? # Protection
-        setField(k, v) unless k.nil?
+        v = NSNull if v.nil?
+        self.send("#{k}=", v) if respond_to? "#{k}="
       end
     end
 
