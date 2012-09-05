@@ -88,7 +88,9 @@ module Parsistence
 
     def attributes=(hashValue)
       hashValue.each do |k, v|
-        if self.respond_to? "#{k}="
+        if v.respond_to?(:each) && !v.is_a?(PFObject)
+          self.attributes = v
+        elsif self.respond_to? "#{k}="
           self.send("#{k}=", v) 
         else
           setField(k, v) unless k.nil?
