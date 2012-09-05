@@ -27,7 +27,8 @@ module Parsistence
       method = method.to_sym
       if fields.include?(method)
         return getField(method)
-      elsif fields.include?("#{method}=")
+      elsif fields.map { |f| "#{f}=".include?(method)} 
+        method = method.split("=")[0]
         return setField(method, args.first)
       elsif relations.include?(method)
         return getRelation(method)
@@ -67,14 +68,14 @@ module Parsistence
       raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
-    def setRelation(relation, value)
+    def setRelation(field, value)
       value = value.PFObject if value.respond_to? :PFObject # unwrap object
-      # return setRelation(relation, value) # This SHOULD work
+      # return setRelation(field, value) # This SHOULD work
       
-      relation = @PFObject.relationforKey(relation)
+      relation = @PFObject.relationforKey(field)
       
-      return relation.addObject(value) if relations.include? relation.to_sym
-      raise "Parsistence Exception: Invalid relation name #{relation} for object #{self.class.to_s}" unless relations.include? relation.to_sym
+      return relation.addObject(value) if relations.include? field.to_sym
+      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}" unless relations.include? relation.to_sym
     end
 
     def attributes
@@ -87,8 +88,11 @@ module Parsistence
 
     def attributes=(hashValue)
       hashValue.each do |k, v|
-        v = NSNull if v.nil?
-        self.send("#{k}=", v) if respond_to? "#{k}="
+        if self.respond_to? "#{k}="
+          self.send("#{k}=", v) 
+        else
+          setField(k, v) unless k.nil?
+        end
       end
     end
 
