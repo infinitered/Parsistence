@@ -186,7 +186,6 @@ module Parsistence
 
       def validates_presence_of(field, opts={})
         @presenceValidationMessages ||= {}
-        puts opts.class
         @presenceValidationMessages[field] = opts[:message] if opts[:message]
         validate_presence(field)
       end
