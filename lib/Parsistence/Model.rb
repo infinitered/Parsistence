@@ -112,7 +112,12 @@ module Parsistence
           validateField field, value
         end
 
-        saved = @PFObject.save
+        if @errors && @errors.length > 0
+          saved = false
+        else
+          saved = @PFObject.save
+        end
+
         after_save if saved
       end
       saved
@@ -135,6 +140,9 @@ module Parsistence
       @errors[field] || false
     end
 
+    def errors
+      @errors || nil
+    end
 
     module ClassMethods
       def fields(*args)
