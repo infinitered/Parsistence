@@ -128,12 +128,23 @@ module Parsistence
 
     # Validations
     def presenceValidations
-      self.class.send(:get_presenceValidations)
+      self.class.send(:get_presence_validations)
+    end
+
+    def presenceValidationMessages
+      self.class.send(:get_presence_validation_messages)
     end
 
     def validateField(field, value)
       @errors ||= {}
-      @errors[field] = "#{field} can't be blank" if presenceValidations.include?(field) && value.nil? || value == ""
+      if presenceValidations.include?(field) && value.nil? || value == ""
+        messages = presenceValidationMessages
+        if messages.include?(field) 
+          @errors[field] = messages[field]
+        else
+          @errors[field] = "#{field} can't be blank" 
+        end
+      end
     end
 
     def errorForField(field)
@@ -173,12 +184,19 @@ module Parsistence
         @relations ||= []
       end
 
-      def validates_presence_of(*args)
-        args.each {|arg| validate_presence(arg)}
+      def validates_presence_of(field, opts={})
+        @presenceValidationMessages ||= {}
+        puts opts.class
+        @presenceValidationMessages[field] = opts[:message] if opts[:message]
+        validate_presence(field)
       end
 
-      def get_presenceValidations
-        @presenceValidations ||= []
+      def get_presence_validations
+        @presenceValidations ||= {}
+      end
+      
+      def get_presence_validation_messages
+        @presenceValidationMessages ||= {}
       end
 
       def validate_presence(field)
