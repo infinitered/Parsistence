@@ -25,16 +25,23 @@ module Parsistence
     
     def method_missing(method, *args, &block)
       method = method.to_sym
-      if fields.include?(method)
-        return getField(method)
-      elsif fields.map { |f| "#{f}=".include?(method)} 
-        method = method.split("=")[0]
-        return setField(method, args.first)
+
+      if method.to_s.include?("=")
+        if relations.map {|r| "#{r}=".include?(method)}
+          method = method.split("=")[0]
+          return setRelation(method, args.first)
+        elsif fields.map { |f| "#{f}=".include?(method)} 
+          method = method.split("=")[0]
+          return setField(method, args.first)
+        elsif @PFObject.respond_to?(method)
+          return @PFObject.send(method, *args, &block)
+        else
+          super
+        end 
       elsif relations.include?(method)
         return getRelation(method)
-      elsif relations.map {|r| "#{r}=".include?(method)}
-        method = method.split("=")[0]
-        return setRelation(method, args.first)
+      elsif fields.include?(method)
+        return getField(method)
       elsif @PFObject.respond_to?(method)
         return @PFObject.send(method, *args, &block)
       else
