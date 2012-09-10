@@ -6,6 +6,16 @@ module Parsistence
     
     RESERVED_KEYS = [:objectId, :username, :password, :email]
 
+    def initialize(pf=nil)
+      if pf
+        self.PFObject = pf
+      else
+        self.PFObject = PFObject.objectWithClassName(self.class.to_s)
+      end
+
+      self
+    end
+    
     def PFObject=(value)
       @PFObject = value
       @PFUser = @PFObject
@@ -21,7 +31,7 @@ module Parsistence
         users = query.findObjects
         users
       end
-
+      
       def currentUser
         PFUser.currentUser
       end

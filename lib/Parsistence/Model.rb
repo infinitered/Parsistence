@@ -11,39 +11,30 @@ module Parsistence
         self.PFObject = PFObject.objectWithClassName(self.class.to_s)
       end
 
-      # setupRelations unless pf
-
       self
     end
-
-    # This code is to correct for a bug where relations aren't initialized when creating a new instance
-    # def setupRelations
-    #   relations.each do |r|
-    #     self.send("#{r}=", @PFObject.relationforKey(r))
-    #   end
-    # end
     
     def method_missing(method, *args, &block)
       method = method.to_sym
-
+      setter = false
+      
       if method.to_s.include?("=")
-        if relations.map {|r| "#{r}=".include?(method)}
-          method = method.split("=")[0]
-          return setRelation(method, args.first)
-        elsif fields.map { |f| "#{f}=".include?(method)} 
-          method = method.split("=")[0]
-          return setField(method, args.first)
-        elsif @PFObject.respond_to?(method)
-          return @PFObject.send(method, *args, &block)
-        else
-          super
-        end 
-      elsif relations.include?(method)
+        setter = true
+        method = method.split("=")[0].to_sym
+      end
+
+      # Setters
+      if relations.include?(method) && setter
+        return setRelation(method, args.first)
+      elsif fields.include?(method) && setter
+        return setField(method, args.first)
+      # Getters
+      elsif relations.include? method
         return getRelation(method)
-      elsif fields.include?(method)
+      elsif fields.include? method
         return getField(method)
-      elsif @PFObject.respond_to?(method)
-        return @PFObject.send(method, *args, &block)
+      elsif self.PFObject.respond_to?(method)
+        return self.PFObject.send(method, *args, &block)
       else
         super
       end
@@ -71,12 +62,18 @@ module Parsistence
     end
 
     def getRelation(field)
-      relation = @PFObject.objectForKey(field) if relations.include? field.to_sym
       if has_many.include?(field.to_sym)
-        p relation.public_methods
-        abort
+        relation = @PFObject.objectForKey(field) if relations.include? field.to_sym
+        # This is not implemented yet
+        # return @relation[field] ||= begin
+        #   r = Relation.new(relation)
+        #   r.klass = self
+        #   r.belongs_to = true
+        #   r
+        # end
+        raise "Parsistence Exception: has_many relationships aren't implemented yet. Use a regular query instead."
       elsif belongs_to.include?(field.to_sym)
-
+        return self.getField(field)
       else
         raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
       end
@@ -84,12 +81,14 @@ module Parsistence
 
     def setRelation(field, value)
       value = value.PFObject if value.respond_to? :PFObject # unwrap object
-      # return setRelation(field, value) # This SHOULD work
+      if has_many.include?(field.to_sym)
+        relation = @PFObject.relationforKey(field)
+        return relation.addObject(value) if relations.include? field.to_sym
+      elsif belongs_to.include?(field.to_sym)
+        return setField(field, value)
+      end
       
-      relation = @PFObject.relationforKey(field)
-      
-      return relation.addObject(value) if relations.include? field.to_sym
-      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}" unless relations.include? relation.to_sym
+      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     def attributes
@@ -115,6 +114,7 @@ module Parsistence
     def save
       saved = false
       unless before_save == false
+        reset_errors
         self.attributes.each do |field, value|
           validateField field, value
         end
@@ -167,7 +167,19 @@ module Parsistence
     end
 
     def errors
-      @errors || nil
+      @errors
+    end
+
+    def valid?
+      self.errors.nil? || self.errors.length == 0
+    end
+
+    def invalid?
+      !self.valid?
+    end
+
+    def reset_errors
+      @errors = nil
     end
 
     module ClassMethods
@@ -182,7 +194,7 @@ module Parsistence
       end
       
       def get_fields
-        @fields
+        @fields ||= []
       end
 
       def relations(*args)
@@ -199,24 +211,38 @@ module Parsistence
         @relations ||= []
       end
 
-      def has_many(*args)
+      def has_many(field, args={})
+        relation(field)
+
         @has_many ||= []
-        args.each { |arg| relation(arg); @has_many << arg;}
+        @has_many << field
         @has_many.uniq!
+
+        @has_many_attributes ||= {}
+        @has_many_attributes[field] = args
       end
 
       def get_has_many
         @has_many ||= []
       end
 
-      def belongs_to(*args)
+      def belongs_to(field, args={})
+        relation(field)
+
         @belongs_to ||= []
-        args.each { |arg| relation(arg); @belongs_to << arg;}
+        @belongs_to << field
         @belongs_to.uniq!
+
+        @belongs_to_attributes ||= {}
+        @belongs_to_attributes[field] = args
       end
 
       def get_belongs_to
         @belongs_to ||= []
+      end
+
+      def get_belongs_to_attributes(field)
+        @belongs_to_attributes[field] ||= { class_name: field }
       end
 
       def validates_presence_of(field, opts={})

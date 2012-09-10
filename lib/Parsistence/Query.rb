@@ -1,21 +1,43 @@
 module Parsistence
   module Model
     module ClassMethods
-      QUERY_STUBS = [ :fetch, :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
+      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
+
+      def fetchAll(&block)
+        q = Parsistence::Query.new
+        q.klass = self
+        return q.fetchAll &block
+      end
+
+      def fetchOne(&block)
+        q = Parsistence::Query.new
+        q.klass = self
+        q.limit(1).fetchAll &block
+      end
+
+      def all(&block)
+        fetchAll(&block)
+      end
 
       def method_missing(method, *args, &block)
-        if method == :limit
-          return self.limit(args.first) if args.length == 1
-          return self.limit(args.first, args.last)
+        if method == :limit && args.length == 2
+          q = Parsistence::Query.new
+          q.klass = self
+          return q.send(method, args[0], args[1])
+        elsif QUERY_STUBS.include? method.to_sym && args.length == 0
+          q = Parsistence::Query.new
+          q.klass = self
+          return q.send(method, &block) if block_given?
+          return q.send(method)
         elsif QUERY_STUBS.include? method.to_sym
           q = Parsistence::Query.new
           q.klass = self
-          return q.send(method, args.first, &block) if block
+          return q.send(method, args.first, &block) if block_given?
           return q.send(method, args.first)
         elsif method.start_with?("find_by_")
-          attribute = method.gsub("find_by_", "")
-          cond[attribute] = args.first
-          return self.limit(1).where(cond, block)
+          # attribute = method.gsub("find_by_", "")
+          # cond[attribute] = args.first
+          # return self.limit(1).where(cond, block)
         elsif method.start_with?("find_all_by_")
           # attribute = method.gsub("find_all_by_", "")
           # cond[attribute] = args.first
@@ -218,6 +240,7 @@ module Parsistence
       fields.each do |field|
         @includes << field
       end
+      self
     end
   end
 end
