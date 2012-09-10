@@ -52,7 +52,7 @@ users.map {|u| u.objectId}.include?(user.objectId) #=> true
 Queries use a somewhat different pattern than ActiveRecord but are relatively familiar. They are most like persistence.js.
 
 ```ruby
-Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(25).fetch do |cars, error|
+Car.eq(license: "ABC-123", model: "Camry").order(year: :desc).limit(25).fetchAll do |cars, error|
   if cars
     cars.each do |car|
       # `car` is an instance of your `Car` model here.
@@ -66,21 +66,52 @@ Chain multiple conditions together, even the same condition type multiple times,
 ####Available Conditions
 (note: each condition can take multiple comma-separated fields and values)
 
-**eq:** Check if equal the passed in values.
+<table>
+  <tr>
+    <th>Method</th>
+    <th>Effect</th>
+  </tr>
 
-**notEq:** Check if NOT equal to the passed in values.
+  <tr>
+    <td>**eq:**</td>
+    <td>Check if equal the passed in values.</td>
+  </tr>
 
-**gt:** Check if greater than the passed in values.
+  <tr>
+    <td>**notEq:**</td>
+    <td>Check if NOT equal to the passed in values.</td>
+  </tr>
 
-**lt:** Check if less than the passed in values.
+  <tr>
+    <td>**gt:**</td>
+    <td>Check if greater than the passed in values.</td>
+  </tr>
 
-**gte:** Check if greater or equal to than the passed in values.
+  <tr>
+    <td>**lt:**</td>
+    <td>Check if less than the passed in values.</td>
+  </tr>
 
-**lte:** Check if less than or equal to the passed in values.
+  <tr>
+    <td>**gte:**</td>
+    <td>Check if greater or equal to than the passed in values.</td>
+  </tr>
 
-**order:** Order by one or more fields. Specify :asc or :desc.
+  <tr>
+    <td>**lte:**</td>
+    <td>Check if less than or equal to the passed in values.</td>
+  </tr>
 
-**limit:** Limit is slightly different...it takes either one argument (limit) or two (offset, limit).
+  <tr>
+    <td>**order:**</td>
+    <td>Order by one or more fields. Specify :asc or :desc.</td>
+  </tr>
+
+  <tr>
+    <td>**limit:**</td>
+    <td>Limit is slightly different...it takes either one argument (limit) or two (offset, limit).</td>
+  </tr>
+</table>
 
 ### Relationships
 
@@ -92,7 +123,7 @@ class Post
 
   fields :title, :body, :author
 
-  relations :author
+  belongs_to :author # Must be a "pointer" object on Parse.com
 end
 
 Author.where(name: "Jamon Holmgren").fetchOne do |fetchedAuthor, error|
