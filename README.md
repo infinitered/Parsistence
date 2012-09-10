@@ -78,8 +78,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Equal to</td>
     <td>
       <pre>
-        Tree.eq(name: "Fir").fetchAll do |trees|
-          ...
+Tree.eq(name: "Fir").fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -89,8 +90,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>NOT equal to</td>
     <td>
       <pre>
-        Tree.notEq(name: "Fir").fetchAll do |trees|
-          ...
+Tree.notEq(name: "Fir").fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -100,8 +102,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Greater than</td>
     <td>
       <pre>
-        Tree.gt(height: 10).fetchAll do |trees|
-          ...
+Tree.gt(height: 10).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -111,8 +114,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Less than</td>
     <td>
       <pre>
-        Tree.lt(height: 10).fetchAll do |trees|
-          ...
+Tree.lt(height: 10).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -122,8 +126,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Greater than or equal to</td>
     <td>
       <pre>
-        Tree.gte(height: 10).fetchAll do |trees|
-          ...
+Tree.gte(height: 10).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -133,8 +138,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Less than or equal to</td>
     <td>
       <pre>
-        Tree.lte(height: 10).fetchAll do |trees|
-          ...
+Tree.lte(height: 10).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -144,8 +150,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Order by one or more fields (:asc/:desc).</td>
     <td>
       <pre>
-        Tree.order(height: :asc).fetchAll do |trees|
-          ...
+Tree.order(height: :asc).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
@@ -155,8 +162,9 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>Limit and offset.</td>
     <td>
       <pre>
-        Tree.limit(25, 10).fetchAll do |trees|
-          ...
+Tree.limit(25, 10).fetchAll do |trees|
+  ...
+end
       </pre>
     </td>
   </tr>
