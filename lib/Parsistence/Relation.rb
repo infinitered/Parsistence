@@ -1,28 +1,28 @@
-module Parsistence
-  class Relation
-    attr_accessor :PFRelation, :belongs_to, :klass
+# module Parsistence
+#   class Relation
+#     attr_accessor :PFRelation, :belongs_to, :klass
     
-    def initialize(pf_relation)
-      self.PFRelation = pf_relation
+#     def initialize(pf_relation)
+#       self.PFRelation = pf_relation
 
-    end
+#     end
 
-    def fetch(&block)
-      if self.belongs_to
-        self.PFRelation.fetchIfNeededInBackgroundWithBlock do |result, error|
-          if result
-            result = self.klass.new(result)
-          end
+#     def fetch(&block)
+#       if self.belongs_to
+#         self.PFRelation.fetchIfNeededInBackgroundWithBlock do |result, error|
+#           if result
+#             result = self.klass.new(result)
+#           end
 
-          block.call(result, error)
-        end
-      else
+#           block.call(result, error)
+#         end
+#       else
+#         self.PFRelation.
+#       end
+#     end
 
-      end
-    end
-
-    def fetchAll(&block)
-      self.fetch(block)
-    end
-  end
-end
+#     def fetchAll(&block)
+#       self.fetch(block)
+#     end
+#   end
+# end
