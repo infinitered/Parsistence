@@ -70,46 +70,95 @@ Chain multiple conditions together, even the same condition type multiple times,
   <tr>
     <th>Method</th>
     <th>Effect</th>
+    <th>Example</th>
   </tr>
 
   <tr>
-    <td>**eq:**</td>
-    <td>Check if equal the passed in values.</td>
+    <td>eq</td>
+    <td>Equal to</td>
+    <td>
+      ```ruby
+        Tree.eq(name: "Fir").fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**notEq:**</td>
-    <td>Check if NOT equal to the passed in values.</td>
+    <td>notEq</td>
+    <td>NOT equal to</td>
+    <td>
+      ```ruby
+        Tree.notEq(name: "Fir").fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**gt:**</td>
-    <td>Check if greater than the passed in values.</td>
+    <td>gt</td>
+    <td>Greater than</td>
+    <td>
+      ```ruby
+        Tree.gt(height: 10).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**lt:**</td>
-    <td>Check if less than the passed in values.</td>
+    <td>lt</td>
+    <td>Less than</td>
+    <td>
+      ```ruby
+        Tree.lt(height: 10).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**gte:**</td>
-    <td>Check if greater or equal to than the passed in values.</td>
+    <td>gte</td>
+    <td>Greater than or equal to</td>
+    <td>
+      ```ruby
+        Tree.gte(height: 10).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**lte:**</td>
-    <td>Check if less than or equal to the passed in values.</td>
+    <td>lte</td>
+    <td>Less than or equal to</td>
+    <td>
+      ```ruby
+        Tree.lte(height: 10).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**order:**</td>
-    <td>Order by one or more fields. Specify :asc or :desc.</td>
+    <td>order</td>
+    <td>Order by one or more fields (:asc/:desc).</td>
+    <td>
+      ```ruby
+        Tree.order(height: :asc).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 
   <tr>
-    <td>**limit:**</td>
-    <td>Limit is slightly different...it takes either one argument (limit) or two (offset, limit).</td>
+    <td>limit</td>
+    <td>Limit and offset.</td>
+    <td>
+      ```ruby
+        Tree.limit(25, 10).fetchAll do |trees|
+          ...
+      ```
+    </td>
   </tr>
 </table>
 
