@@ -77,10 +77,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>eq</td>
     <td>Equal to</td>
     <td>
-      ```ruby
+      `
         Tree.eq(name: "Fir").fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -88,10 +88,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>notEq</td>
     <td>NOT equal to</td>
     <td>
-      ```ruby
+      `
         Tree.notEq(name: "Fir").fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -99,10 +99,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>gt</td>
     <td>Greater than</td>
     <td>
-      ```ruby
+      `
         Tree.gt(height: 10).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -110,10 +110,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>lt</td>
     <td>Less than</td>
     <td>
-      ```ruby
+      `
         Tree.lt(height: 10).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -121,10 +121,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>gte</td>
     <td>Greater than or equal to</td>
     <td>
-      ```ruby
+      `
         Tree.gte(height: 10).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -132,10 +132,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>lte</td>
     <td>Less than or equal to</td>
     <td>
-      ```ruby
+      `
         Tree.lte(height: 10).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -143,10 +143,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>order</td>
     <td>Order by one or more fields (:asc/:desc).</td>
     <td>
-      ```ruby
+      `
         Tree.order(height: :asc).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 
@@ -154,10 +154,10 @@ Chain multiple conditions together, even the same condition type multiple times,
     <td>limit</td>
     <td>Limit and offset.</td>
     <td>
-      ```ruby
+      `
         Tree.limit(25, 10).fetchAll do |trees|
           ...
-      ```
+      `
     </td>
   </tr>
 </table>
