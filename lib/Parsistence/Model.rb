@@ -71,8 +71,13 @@ module Parsistence
     end
 
     def getRelation(field)
-      return @PFObject.objectForKey(field) if relations.include? field.to_sym
-      raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
+      if has_many.include?(field.to_sym)
+        return @PFObject.objectForKey(field) if relations.include? field.to_sym
+      elsif belongs_to.include?(field.to_sym)
+
+      else
+        raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
+      end
     end
 
     def setRelation(field, value)
@@ -135,6 +140,14 @@ module Parsistence
       self.class.send(:get_presence_validation_messages)
     end
 
+    def has_many
+      self.class.sent(:get_has_many)
+    end
+
+    def belongs_to
+      self.class.sent(:get_belongs_to)
+    end
+
     def validateField(field, value)
       @errors ||= {}
       if presenceValidations.include?(field) && value.nil? || value == ""
@@ -182,6 +195,26 @@ module Parsistence
 
       def get_relations
         @relations ||= []
+      end
+
+      def has_many(*args)
+        @has_many ||= []
+        args.each { |arg| relation(arg); @has_many << arg;}
+        @has_many.uniq!
+      end
+
+      def get_has_many
+        @has_many ||= []
+      end
+
+      def belongs_to(*args)
+        @belongs_to ||= []
+        args.each { |arg| relation(arg); @belongs_to << arg;}
+        @belongs_to.uniq!
+      end
+
+      def get_belongs_to
+        @belongs_to ||= []
       end
 
       def validates_presence_of(field, opts={})
