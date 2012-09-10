@@ -71,8 +71,10 @@ module Parsistence
     end
 
     def getRelation(field)
+      relation = @PFObject.objectForKey(field) if relations.include? field.to_sym
       if has_many.include?(field.to_sym)
-        return @PFObject.objectForKey(field) if relations.include? field.to_sym
+        p relation.public_methods
+        abort
       elsif belongs_to.include?(field.to_sym)
 
       else
@@ -141,11 +143,11 @@ module Parsistence
     end
 
     def has_many
-      self.class.sent(:get_has_many)
+      self.class.send(:get_has_many)
     end
 
     def belongs_to
-      self.class.sent(:get_belongs_to)
+      self.class.send(:get_belongs_to)
     end
 
     def validateField(field, value)
