@@ -80,8 +80,7 @@ Chain multiple conditions together, even the same condition type multiple times,
       <pre>
 Tree.eq(name: "Fir").fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -92,8 +91,7 @@ end
       <pre>
 Tree.notEq(name: "Fir").fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -104,8 +102,7 @@ end
       <pre>
 Tree.gt(height: 10).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -116,8 +113,7 @@ end
       <pre>
 Tree.lt(height: 10).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -128,8 +124,7 @@ end
       <pre>
 Tree.gte(height: 10).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -140,8 +135,7 @@ end
       <pre>
 Tree.lte(height: 10).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -152,8 +146,7 @@ end
       <pre>
 Tree.order(height: :asc).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 
@@ -164,8 +157,7 @@ end
       <pre>
 Tree.limit(25, 10).fetchAll do |trees|
   ...
-end
-      </pre>
+end</pre>
     </td>
   </tr>
 </table>
