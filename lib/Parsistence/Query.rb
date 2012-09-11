@@ -66,7 +66,6 @@ module Parsistence
 
     def createQuery
       query = PFQuery.queryWithClassName(self.klass.to_s)
-      $stderr.puts @includes
       @includes.each do |include|
         query.includeKey(include)
       end
@@ -98,12 +97,10 @@ module Parsistence
       first = true
       @order.each do |field, direction|
         if first
-          # $stderr.puts "Setting order first"
           query.orderByAscending(field) if direction && direction == :asc
           query.orderByDescending(field) if direction && direction == :desc
           first = false
         else
-          # $stderr.puts "Setting order again"
           query.addAscendingOrder(field) if direction && direction == :asc
           query.addDescendingOrder(field) if direction && direction == :desc
         end
