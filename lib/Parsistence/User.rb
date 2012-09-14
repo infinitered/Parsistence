@@ -1,6 +1,6 @@
 module Parsistence
   module User
-    include ::Parsistence::Model
+    include Parsistence::Model
 
     attr_accessor :PFUser
     
@@ -25,7 +25,9 @@ module Parsistence
       self.PFObject = value
     end
 
-    module ClassMethods    
+    module ClassMethods
+      include Parsistence::Model::ClassMethods
+
       def all
         query = PFQuery.queryForUser
         users = query.findObjects
