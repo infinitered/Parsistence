@@ -35,6 +35,11 @@ module Parsistence
       end
       
       def currentUser
+        return PFUser.currentUser if PFUser.currentUser
+        nil
+      end
+
+      def current_user
         if PFUser.currentUser
           return @current_user ||= self.new(PFUser.currentUser)
         end

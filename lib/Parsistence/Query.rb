@@ -1,7 +1,7 @@
 module Parsistence
   module Model
     module ClassMethods
-      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte ] # :limit is different
+      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte, :in ] # :limit is different
 
       def fetchAll(&block)
         q = Parsistence::Query.new
@@ -58,6 +58,7 @@ module Parsistence
       @gtConditions = {}
       @lteConditions = {}
       @gteConditions = {}
+      @inConditions = {}
       @order = {}
       @limit = nil
       @offset = nil
@@ -73,6 +74,10 @@ module Parsistence
       @conditions.each do |key, value|
         value = value.PFObject if value.respond_to? :PFObject
         query.whereKey(key, equalTo: value)
+      end
+      @inConditions.each do |key, value|
+        value = value.PFObject if value.respond_to? :PFObject
+        query.whereKey(key, containedIn: value)
       end
       @negativeConditions.each do |key, value|
         value = value.PFObject if value.respond_to? :PFObject
@@ -168,6 +173,7 @@ module Parsistence
       $stderr.puts "gtConditions: #{@gtConditions.to_s}"
       $stderr.puts "lteConditions: #{@lteConditions.to_s}"
       $stderr.puts "gteConditions: #{@gteConditions.to_s}"
+      $stderr.puts "inConditions: #{@inConditions.to_s}"
       $stderr.puts "order: #{@order.to_s}"
       $stderr.puts "limit: #{@limit.to_s}"
       $stderr.puts "offset: #{@offset.to_s}"
@@ -215,6 +221,13 @@ module Parsistence
     def gt(*fields)
       fields.each do |field|
         @gtConditions.merge! field
+      end
+      self
+    end
+
+    def in(*fields)
+      fields.each do |field|
+        @inConditions.merge! field
       end
       self
     end
