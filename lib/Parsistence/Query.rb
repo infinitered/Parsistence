@@ -72,31 +72,31 @@ module Parsistence
       end
       
       @conditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, equalTo: value)
       end
       @inConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, containedIn: value)
       end
       @negativeConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, notEqualTo: value)
       end
       @ltConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, lessThan: value)
       end
       @gtConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, greaterThan: value)
       end
       @lteConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, lessThanOrEqualTo: value)
       end
       @gteConditions.each do |key, value|
-        value = value.PFObject if value.respond_to? :PFObject
+        value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, greaterThanOrEqualTo: value)
       end
       first = true
