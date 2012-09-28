@@ -156,13 +156,12 @@ module Parsistence
     end
 
     def all(&callback)
-      fetch(&callback)
+      fetchAll(&callback)
       nil
     end
 
     def first(&callback)
-      limit(0, 1)
-      fetch(&callback)
+      fetchOne(&callback)
       nil
     end
     
