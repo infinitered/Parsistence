@@ -129,9 +129,20 @@ module Parsistence
       end
       saved
     end
-
     def before_save; end
     def after_save; end
+
+    def delete
+      deleted = false
+      unless before_delete == false
+        deleted = @PFObject.delete
+      end
+      after_delete if deleted
+      deleted
+    end
+    def before_delete; end
+    def after_delete; end
+
 
     # Validations
     def presenceValidations
