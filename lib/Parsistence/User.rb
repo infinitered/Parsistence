@@ -45,6 +45,11 @@ module Parsistence
         end
         nil
       end
+
+      def log_out
+        @current_user = nil
+        PFUser.logOut
+      end
     end
 
     def self.included(base)
