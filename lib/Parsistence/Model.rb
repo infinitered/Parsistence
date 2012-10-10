@@ -163,7 +163,7 @@ module Parsistence
 
     def validateField(field, value)
       @errors ||= {}
-      if presenceValidations.include?(field) && value.nil? || value == ""
+      if presenceValidations.include?(field) && (value.nil? || value == "")
         messages = presenceValidationMessages
         if messages.include?(field) 
           @errors[field] = messages[field]
