@@ -24,11 +24,15 @@ module Parsistence
       end
 
       # Setters
-      if relations.include?(method) && setter
+      if RESERVED_KEYS.include?(method) && setter
+        return self.PFObject.send("#{method}=", args)
+      elsif relations.include?(method) && setter
         return setRelation(method, args.first)
       elsif fields.include?(method) && setter
         return setField(method, args.first)
       # Getters
+      elsif RESERVED_KEYS.include?(method)
+        return self.PFObject.send(method)
       elsif relations.include? method
         return getRelation(method)
       elsif fields.include? method
