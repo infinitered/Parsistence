@@ -33,6 +33,8 @@ module Parsistence
         return getRelation(method)
       elsif fields.include? method
         return getField(method)
+      elsif self.PFObject.respond_to?("#{method}=")
+        return self.PFObject.send("#{method}=", *args, &block)
       elsif self.PFObject.respond_to?(method)
         return self.PFObject.send(method, *args, &block)
       else
