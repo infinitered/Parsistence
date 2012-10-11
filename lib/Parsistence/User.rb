@@ -10,7 +10,7 @@ module Parsistence
       if pf
         self.PFObject = pf
       else
-        self.PFObject = PFObject.objectWithClassName(self.class.to_s)
+        self.PFObject = PFUser.new
       end
 
       self
