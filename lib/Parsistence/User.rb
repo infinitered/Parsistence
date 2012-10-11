@@ -25,6 +25,10 @@ module Parsistence
       self.PFObject = value
     end
 
+    def password=(value)
+      self.PFUser.password = value
+    end
+
     module ClassMethods
       include Parsistence::Model::ClassMethods
 
