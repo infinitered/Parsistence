@@ -160,6 +160,17 @@ Tree.limit(25, 10).fetchAll do |trees|
 end</pre>
     </td>
   </tr>
+
+  <tr>
+    <td>in</td>
+    <td>Get fields where value is contained in an array of values.</td>
+    <td>
+      <pre>
+Tree.in(height: [10, 15, 20, 25]).fetchAll do |trees|
+  ...
+end</pre>
+    </td>
+  </tr>
 </table>
 
 ### Relationships
