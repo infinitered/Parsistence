@@ -120,10 +120,7 @@ module Parsistence
     def save
       saved = false
       unless before_save == false
-        reset_errors
-        self.attributes.each do |field, value|
-          validateField field, value
-        end
+        self.validate
 
         if @errors && @errors.length > 0
           saved = false
@@ -137,6 +134,19 @@ module Parsistence
     end
     def before_save; end
     def after_save; end
+
+    def validate
+      reset_errors
+      self.attributes.each do |field, value|
+        validateField field, value
+      end
+    end
+
+    def is_valid?
+      self.validate
+      return false if @errors && @errors.length > 0
+      true
+    end
 
     def delete
       deleted = false
