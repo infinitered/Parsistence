@@ -65,6 +65,12 @@ module Parsistence
       @includes = []
     end
 
+    def checkKey(key)
+      unless self.klass.new.respond_to?(key.to_sym)
+        $stderr.puts "Parsistence Warning: No field '#{key}' found for #{self.klass.to_s} query."
+      end
+    end
+
     def createQuery
       query = PFQuery.queryWithClassName(self.klass.to_s)
       @includes.each do |include|
@@ -72,35 +78,43 @@ module Parsistence
       end
       
       @conditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, equalTo: value)
       end
       @inConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, containedIn: value)
       end
       @negativeConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, notEqualTo: value)
       end
       @ltConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, lessThan: value)
       end
       @gtConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, greaterThan: value)
       end
       @lteConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, lessThanOrEqualTo: value)
       end
       @gteConditions.each do |key, value|
+        checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
         query.whereKey(key, greaterThanOrEqualTo: value)
       end
       first = true
       @order.each do |field, direction|
+        checkKey field
         if first
           query.orderByAscending(field) if direction && direction == :asc
           query.orderByDescending(field) if direction && direction == :desc
