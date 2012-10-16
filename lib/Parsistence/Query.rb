@@ -134,6 +134,15 @@ module Parsistence
       query
     end
 
+    def count(&callback)
+      query = createQuery
+      
+      myKlass = self.klass
+      query.countObjectsInBackgroundWithBlock (lambda { |item_count, error|
+        callback.call item_count, error
+      })
+    end
+
     def fetch(&callback)
       if @limit && @limit == 1
         fetchOne(&callback) 
