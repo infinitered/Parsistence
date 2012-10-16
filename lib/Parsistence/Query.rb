@@ -75,7 +75,11 @@ module Parsistence
     end
 
     def createQuery
-      query = PFQuery.queryWithClassName(self.klass.to_s)
+      if self.klass.to_s == "User"
+        query = PFUser.query
+      else
+        query = PFQuery.queryWithClassName(self.klass.to_s)
+      end
       @includes.each do |include|
         query.includeKey(include)
       end
@@ -134,14 +138,15 @@ module Parsistence
       query
     end
 
-    def count(&callback)
-      query = createQuery
+    # TODO: Get this working.
+    # def count(&callback)
+    #   query = createQuery
       
-      myKlass = self.klass
-      query.countObjectsInBackgroundWithBlock (lambda { |item_count, error|
-        callback.call item_count, error
-      })
-    end
+    #   myKlass = self.klass
+    #   query.countObjectsInBackgroundWithBlock (lambda { |item_count, error|
+    #     callback.call item_count, error
+    #   })
+    # end
 
     def fetch(&callback)
       if @limit && @limit == 1
