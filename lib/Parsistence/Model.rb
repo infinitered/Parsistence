@@ -310,26 +310,6 @@ module Parsistence
         @presenceValidations ||= []
         @presenceValidations << field
       end
-
-      def getter?(method)
-        !setter?(method)
-      end
-
-      def setter?(method)
-        method.to_s.include?("=")
-      end
-
-      def respond_to?(method)
-        method = method.to_sym unless method.is_a? Symbol
-
-        if setter?(method)
-          method = method.to_s.split("=")[0].to_sym
-        end
-
-        return true if get_belongs_to.include?(method) || get_fields.include?(method) || get_relations.include?(method)
-
-        super
-      end 
    end
     
     def self.included(base)
