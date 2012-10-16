@@ -18,7 +18,7 @@ module Parsistence
       method = method.to_sym
       setter = false
       
-      if method.to_s.include?("=")
+      if setter?(method)
         setter = true
         method = method.split("=")[0].to_sym
       end
@@ -45,7 +45,27 @@ module Parsistence
         super
       end
     end
-    
+
+    def getter?(method)
+      !setter?(method)
+    end
+
+    def setter?(method)
+      method.to_s.include?("=")
+    end
+
+    def respond_to?(method)
+      method = method.to_sym unless method.is_a? Symbol
+
+      if setter?(method)
+        method = method.to_s.split("=")[0].to_sym
+      end
+
+      return true if fields.include?(method) || relations.include?(method)
+
+      super
+    end 
+
     def fields
       self.class.send(:get_fields)
     end
@@ -290,7 +310,27 @@ module Parsistence
         @presenceValidations ||= []
         @presenceValidations << field
       end
-    end
+
+      def getter?(method)
+        !setter?(method)
+      end
+
+      def setter?(method)
+        method.to_s.include?("=")
+      end
+
+      def respond_to?(method)
+        method = method.to_sym unless method.is_a? Symbol
+
+        if setter?(method)
+          method = method.to_s.split("=")[0].to_sym
+        end
+
+        return true if get_belongs_to.include?(method) || get_fields.include?(method) || get_relations.include?(method)
+
+        super
+      end 
+   end
     
     def self.included(base)
       base.extend(ClassMethods)
