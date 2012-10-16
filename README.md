@@ -20,13 +20,16 @@ Create an instance:
 
 ```ruby
 p = Post.new
+
+p.respond_to?(:title) #=> true
+
 p.title = "Why RubyMotion Is Better Than Objective-C"
 p.author = "Josh Symonds"
 p.body = "trololol"
 p.saveEventually
 ```
 
-`Parsistence::Model` objects will `respond_to?` to all methods available to [`PFObject`](https://parse.com/docs/ios/api/Classes/PFObject.html) in the Parse iOS SDK. You can also access the `PFObject` instance directly with, you guessed it, `Parsistence::Model#PFObject`.
+`Parsistence::Model` objects will `respond_to?` to all methods available to [`PFObject`](https://parse.com/docs/ios/api/Classes/PFObject.html) in the Parse iOS SDK, as well as 'fields' getters and setters. You can also access the `PFObject` instance directly with, you guessed it, `Parsistence::Model#PFObject`.
 
 ### Users
 
