@@ -55,11 +55,12 @@ module Parsistence
     end
 
     def respond_to?(method)
+      if setter?(method)
+        method = method.to_s.split("=")[0]
+      end
+
       method = method.to_sym unless method.is_a? Symbol
 
-      if setter?(method)
-        method = method.to_s.split("=")[0].to_sym
-      end
 
       return true if fields.include?(method) || relations.include?(method)
 
