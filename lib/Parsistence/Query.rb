@@ -67,11 +67,10 @@ module Parsistence
 
     def checkKey(key)
       # TODO: Sanity check for mis-entered keys.
-      # tmp = self.klass.new
-      # $stderr.puts tmp
-      # unless tmp.respond_to?(key.to_sym)
-      #   $stderr.puts "Parsistence Warning: No field '#{key}' found for #{self.klass.to_s} query."
-      # end
+      tmp = self.klass.new
+      unless tmp.respond_to?(key.to_sym)
+        $stderr.puts "Parsistence Warning: No field '#{key}' found for #{self.klass.to_s} query."
+      end
     end
 
     def createQuery
