@@ -29,6 +29,22 @@ module Parsistence
       self.PFUser.password = value
     end
 
+    def signUp
+      saved = false
+      unless before_save == false
+        self.validate
+
+        if @errors && @errors.length > 0
+          saved = false
+        else
+          saved = @PFObject.signUp
+        end
+
+        after_save if saved
+      end
+      saved
+    end
+
     module ClassMethods
       include Parsistence::Model::ClassMethods
 
