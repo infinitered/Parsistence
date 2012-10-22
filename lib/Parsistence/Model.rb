@@ -83,9 +83,13 @@ module Parsistence
     end
 
     def setField(field, value)
-      return @PFObject.send("#{field}=", value) if RESERVED_KEYS.include?(field)
-      return @PFObject[field] = value if fields.include? field.to_sym
-      raise "Parsistence Exception: Invalid field name #{field} for object #{self.class.to_s}" unless fields.include? field.to_sym
+      if RESERVED_KEYS.include?(field) || fields.include? field.to_sym
+        return @PFObject.removeObjectForKey(field.to_s) if value.nil?
+        return @PFObject.send("#{field}=", value) if RESERVED_KEYS.include?(field)
+        return @PFObject[field] = value
+      else
+        raise "Parsistence Exception: Invalid field name #{field} for object #{self.class.to_s}"
+      end
     end
 
     def getRelation(field)
