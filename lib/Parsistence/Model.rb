@@ -83,7 +83,7 @@ module Parsistence
     end
 
     def setField(field, value)
-      if RESERVED_KEYS.include?(field) || fields.include? field.to_sym
+      if RESERVED_KEYS.include?(field) || fields.include?(field.to_sym)
         return @PFObject.removeObjectForKey(field.to_s) if value.nil?
         return @PFObject.send("#{field}=", value) if RESERVED_KEYS.include?(field)
         return @PFObject[field] = value
