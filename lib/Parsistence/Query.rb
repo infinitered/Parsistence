@@ -66,7 +66,7 @@ module Parsistence
     end
 
     def checkKey(key)
-      # TODO: Sanity check for mis-entered keys.
+      # Sanity check for mis-entered keys.
       tmp = self.klass.new
       unless tmp.respond_to?(key.to_sym)
         $stderr.puts "Parsistence Warning: No field '#{key}' found for #{self.klass.to_s} query."
@@ -157,6 +157,13 @@ module Parsistence
       self
     end
 
+    # @deprecated
+    # Grab all results that match query
+    # 
+    # @param [Block] callback block
+    # @return [Nil]
+    # 
+    # (see #all)
     def fetchAll(&callback)
       query = createQuery
       
@@ -167,6 +174,13 @@ module Parsistence
       })
     end
 
+    # @deprecated
+    # Grab first result that matches query
+    # 
+    # @param [Block] callback block
+    # @return [Nil]
+    # 
+    # (see #first)
     def fetchOne(&callback)
       limit(0, 1)
       query = createQuery
@@ -178,23 +192,33 @@ module Parsistence
       })
     end
 
-    # Query methods
+    # @deprecated
+    # (see #eq)
     def where(*conditions, &callback)
       eq(conditions.first)
       fetch(&callback)
       nil
     end
 
+    # Grab all results that match query
+    # 
+    # @param [Block] callback block
+    # @return [Nil]
     def all(&callback)
       fetchAll(&callback)
       nil
     end
 
+    # Grab first result that matches query
+    # 
+    # @param [Block] callback block
+    # @return [Nil]
     def first(&callback)
       fetchOne(&callback)
       nil
     end
     
+    # Prints current Query conditions to STDERR
     def showQuery
       $stderr.puts "Conditions: #{@conditions.to_s}"
       $stderr.puts "negativeConditions: #{@negativeConditions.to_s}"
@@ -208,7 +232,11 @@ module Parsistence
       $stderr.puts "offset: #{@offset.to_s}"
     end
 
-    # Query parameter methods
+    # Limit number of results
+    # 
+    # @param [Integer] offset
+    # @param [Integer] number to limit, if not passed, first arg is used for limit
+    # @return [Object] self
     def limit(offset, number = nil)
       if number.nil?
         number = offset
@@ -219,6 +247,10 @@ module Parsistence
       self
     end
 
+    # Order query results
+    # 
+    # @param [Hash] of field - order-direction
+    # @return [Object] self
     def order(*fields)
       fields.each do |field|
         @order.merge! field
@@ -226,6 +258,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key == value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def eq(*fields)
       fields.each do |field|
         @conditions.merge! field
@@ -233,6 +269,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key != value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def notEq(*fields)
       fields.each do |field|
         @negativeConditions.merge! field
@@ -240,6 +280,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key < value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def lt(*fields)
       fields.each do |field|
         @ltConditions.merge! field
@@ -247,6 +291,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key > value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def gt(*fields)
       fields.each do |field|
         @gtConditions.merge! field
@@ -254,6 +302,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key is in an array of values
+    # 
+    # @param [Hash] of key-value pairs, value is an array
+    # @return [Object] self
     def in(*fields)
       fields.each do |field|
         @inConditions.merge! field
@@ -261,6 +313,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key <= value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def lte(*fields)
       fields.each do |field|
         @lteConditions.merge! field
@@ -268,6 +324,10 @@ module Parsistence
       self
     end
 
+    # Query for fields where key >= value
+    # 
+    # @param [Hash] of key-value pairs
+    # @return [Object] self
     def gte(*fields)
       fields.each do |field|
         @gteConditions.merge! field
@@ -275,6 +335,10 @@ module Parsistence
       self
     end
 
+    # Include related object in query
+    # 
+    # @param [Hash] of symbols
+    # @return [Object] self
     def includes(*fields)
       fields.each do |field|
         @includes << field

@@ -1,3 +1,3 @@
 module Parsistence
-  VERSION = "0.3.7" unless defined? Parsistence::VERSION
+  VERSION = "0.3.8" unless defined? Parsistence::VERSION
 end

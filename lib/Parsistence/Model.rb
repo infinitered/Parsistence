@@ -54,13 +54,16 @@ module Parsistence
       method.to_s.include?("=")
     end
 
+    # Override of ruby's respond_to?
+    # 
+    # @param [Symbol] method
+    # @return [Bool] true/false
     def respond_to?(method)
       if setter?(method)
         method = method.to_s.split("=")[0]
       end
 
       method = method.to_sym unless method.is_a? Symbol
-
 
       return true if fields.include?(method) || relations.include?(method)
 
@@ -118,6 +121,9 @@ module Parsistence
       raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
+    # Returns all of the attributes of the Model
+    # 
+    # @return [Hash] attributes of Model
     def attributes
       attributes = {}
       fields.each do |f|
@@ -126,6 +132,11 @@ module Parsistence
       @attributes = attributes
     end
 
+    # Sets the attributes of the Model
+    # 
+    # @param [Hash] of attribute, values to set on the Model
+    # @return [Hash] that you gave it
+    # @note will throw an error if a key is invalid
     def attributes=(hashValue)
       hashValue.each do |k, v|
         if v.respond_to?(:each) && !v.is_a?(PFObject)
@@ -138,6 +149,13 @@ module Parsistence
       end
     end
 
+    # Save the current state of the Model to Parse
+    #
+    # @note calls before/after_save hooks
+    # @note before_save MUST return true, or save will not be called on PFObject
+    # @note does not save if validations fail
+    # 
+    # @return [Bool] true/false
     def save
       saved = false
       unless before_save == false
@@ -163,6 +181,9 @@ module Parsistence
       end
     end
 
+    # Checks to see if the current Model has errors
+    #
+    # @return [Bool] true/false
     def is_valid?
       self.validate
       return false if @errors && @errors.length > 0
@@ -231,10 +252,19 @@ module Parsistence
     end
 
     module ClassMethods
+      
+      # set the fields for the current Model
+      #   used in method_missing
+      #
+      # @param [Symbol] one or more fields
       def fields(*args)
         args.each {|arg| field(arg)}
       end
     
+      # set a field for the current Model
+      #
+      # @param [Symbol] field
+      # (see #fields)
       def field(name)
         @fields ||= [:objectId]
         @fields << name.to_sym
@@ -245,10 +275,18 @@ module Parsistence
         @fields ||= []
       end
 
+      # set the relations for the current Model
+      #   used in method_missing
+      #
+      # @param [Symbol] one or more relations
       def relations(*args)
         args.each { |arg| relation(arg)}
       end
 
+      # set a relation for the current Model
+      #
+      # @param [Symbol] relation
+      # (see #relations)
       def relation(name)
         @relations ||= []
         @relations << name.to_sym
@@ -293,6 +331,9 @@ module Parsistence
         @belongs_to_attributes[field] ||= { class_name: field }
       end
 
+      # require a certain field to be present (not nil And not an empty String)
+      # 
+      # @param [Symbol, Hash] field and options (now only has message)
       def validates_presence_of(field, opts={})
         @presenceValidationMessages ||= {}
         @presenceValidationMessages[field] = opts[:message] if opts[:message]
