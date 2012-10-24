@@ -4,8 +4,8 @@ require File.expand_path('../lib/Parsistence/version', __FILE__)
 Gem::Specification.new do |s|
   s.name        = "Parsistence"
   s.version     = Parsistence::VERSION
-  s.authors     = ["Jamon Holmgren", "Silas J. Matson", "Alan deLevie"]
-  s.email       = ["jamon@clearsightstudio.com", "silas@clearsightstudio.com", "adelevie@gmail.com"]
+  s.authors     = ["Jamon Holmgren", "Silas J. Matson"]
+  s.email       = ["jamon@clearsightstudio.com", "silas@clearsightstudio.com"]
   s.homepage    = "https://github.com/clearsightstudio/Parsistence"
   s.summary     = %q{Your models on RubyMotion and Parse in a persistence.js style pattern.}
   s.description = %q{Your models on RubyMotion and Parse in a persistence.js style pattern.}
