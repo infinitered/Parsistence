@@ -234,8 +234,8 @@ module Parsistence
 
     # Limit number of results
     # 
-    # @param [Integer] offset
-    # @param [Integer] number to limit, if not passed, first arg is used for limit
+    # @param [Integer] offset value
+    # @param [Integer] number of results to limit, if not passed, first arg is used for limit
     # @return [Object] self
     def limit(offset, number = nil)
       if number.nil?
@@ -249,7 +249,7 @@ module Parsistence
 
     # Order query results
     # 
-    # @param [Hash] of field - order-direction
+    # @param [Hash] fields - order-direction
     # @return [Object] self
     def order(*fields)
       fields.each do |field|
@@ -260,7 +260,7 @@ module Parsistence
 
     # Query for fields where key == value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def eq(*fields)
       fields.each do |field|
@@ -271,7 +271,7 @@ module Parsistence
 
     # Query for fields where key != value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def notEq(*fields)
       fields.each do |field|
@@ -282,7 +282,7 @@ module Parsistence
 
     # Query for fields where key < value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def lt(*fields)
       fields.each do |field|
@@ -293,7 +293,7 @@ module Parsistence
 
     # Query for fields where key > value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def gt(*fields)
       fields.each do |field|
@@ -304,7 +304,7 @@ module Parsistence
 
     # Query for fields where key is in an array of values
     # 
-    # @param [Hash] of key-value pairs, value is an array
+    # @param [Hash] fields key-value pairs, value is an array
     # @return [Object] self
     def in(*fields)
       fields.each do |field|
@@ -315,7 +315,7 @@ module Parsistence
 
     # Query for fields where key <= value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def lte(*fields)
       fields.each do |field|
@@ -326,7 +326,7 @@ module Parsistence
 
     # Query for fields where key >= value
     # 
-    # @param [Hash] of key-value pairs
+    # @param [Hash] fields key-value pairs
     # @return [Object] self
     def gte(*fields)
       fields.each do |field|
@@ -337,7 +337,7 @@ module Parsistence
 
     # Include related object in query
     # 
-    # @param [Hash] of symbols
+    # @param [Hash] fields
     # @return [Object] self
     def includes(*fields)
       fields.each do |field|

@@ -138,11 +138,11 @@ module Parsistence
 
     # Sets the attributes of the Model
     # 
-    # @param [Hash] of attribute, values to set on the Model
+    # @param [Hash] attrs to set on the Model
     # @return [Hash] that you gave it
     # @note will throw an error if a key is invalid
-    def attributes=(hashValue)
-      hashValue.each do |k, v|
+    def attributes=(attrs)
+      attrs.each do |k, v|
         if v.respond_to?(:each) && !v.is_a?(PFObject)
           self.attributes = v
         elsif self.respond_to? "#{k}="
@@ -260,14 +260,14 @@ module Parsistence
       # set the fields for the current Model
       #   used in method_missing
       #
-      # @param [Symbol] one or more fields
+      # @param [Symbol] args one or more fields
       def fields(*args)
         args.each {|arg| field(arg)}
       end
     
       # set a field for the current Model
       #
-      # @param [Symbol] field
+      # @param [Symbol] name of field
       # (see #fields)
       def field(name)
         @fields ||= [:objectId]
@@ -282,14 +282,14 @@ module Parsistence
       # set the relations for the current Model
       #   used in method_missing
       #
-      # @param [Symbol] one or more relations
+      # @param [Symbol] args one or more relations
       def relations(*args)
         args.each { |arg| relation(arg)}
       end
 
       # set a relation for the current Model
       #
-      # @param [Symbol] relation
+      # @param [Symbol] name of relation
       # (see #relations)
       def relation(name)
         @relations ||= []
