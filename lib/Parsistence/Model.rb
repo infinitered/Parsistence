@@ -117,7 +117,12 @@ module Parsistence
       value = value.PFObject if value.respond_to? :PFObject # unwrap object
       if has_many.include?(field.to_sym)
         relation = @PFObject.relationforKey(field)
-        return relation.addObject(value) if relations.include? field.to_sym
+        if value.nil?
+          # Can't do it
+          raise "Can't set nil for has_many relation."
+        else
+          return relation.addObject(value) if relations.include? field.to_sym
+        end
       elsif belongs_to.include?(field.to_sym)
         return setField(field, value)
       end
