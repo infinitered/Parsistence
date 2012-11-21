@@ -1,7 +1,7 @@
 module Parsistence
   module Model
     module ClassMethods
-      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte, :in ] # :limit is different
+      QUERY_STUBS = [ :where, :first, :limit, :order, :eq, :notEq, :lt, :gt, :lte, :gte, :in, :cached ] # :limit is different
 
       def fetchAll(&block)
         q = Parsistence::Query.new
@@ -51,6 +51,22 @@ module Parsistence
   class Query
     attr_accessor :klass
 
+    def self.cache_policy=(policy)
+      @@cache_policy = policy
+    end
+
+    def self.cache_policy
+      @@cache_policy ||= KPFCachePolicyIgnoreCache
+    end
+
+    def self.cache=(val)
+      if val
+        self.cache_policy = KPFCachePolicyCacheThenNetwork
+      else
+        self.cache_policy = KPFCachePolicyIgnoreCache
+      end
+    end
+
     def initialize
       @conditions = {}
       @negativeConditions = {}
@@ -79,6 +95,15 @@ module Parsistence
       else
         query = PFQuery.queryWithClassName(self.klass.to_s)
       end
+
+      if @cached == true
+        query.cachePolicy = KPFCachePolicyCacheElseNetwork
+      elsif @cached == false
+        query.cachePolicy = KPFCachePolicyCacheNetworkOnly
+      else
+        query.cachePolicy = self.class.cache_policy if self.class.cache_policy        
+      end
+
       @includes.each do |include|
         query.includeKey(include)
       end
@@ -332,6 +357,11 @@ module Parsistence
       fields.each do |field|
         @gteConditions.merge! field
       end
+      self
+    end
+
+    def cached(val=true)
+      @cached = val
       self
     end
 
