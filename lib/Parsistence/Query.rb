@@ -163,14 +163,17 @@ module Parsistence
     end
 
     # TODO: Get this working.
-    # def count(&callback)
-    #   query = createQuery
-      
-    #   myKlass = self.klass
-    #   query.countObjectsInBackgroundWithBlock (lambda { |item_count, error|
-    #     callback.call item_count, error
-    #   })
-    # end
+    def count(&callback)
+      query = createQuery
+      error = Pointer.new(:object)
+      query.countObjectsInBackgroundWithBlock lambda { |item_count, error|
+        if error
+          callback.call false
+        else
+          callback.call item_count
+        end
+      }
+    end
 
     def fetch(&callback)
       if @limit && @limit == 1
