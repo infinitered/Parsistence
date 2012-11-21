@@ -63,7 +63,7 @@ module Parsistence
       if val
         self.cache_policy = KPFCachePolicyCacheThenNetwork
       else
-        self.cache_policy = KPFCachePolicyIgnoreCache
+        self.cache_policy = KPFCachePolicyNetworkOnly
       end
     end
 
@@ -99,7 +99,7 @@ module Parsistence
       if @cached == true
         query.cachePolicy = KPFCachePolicyCacheElseNetwork
       elsif @cached == false
-        query.cachePolicy = KPFCachePolicyCacheNetworkOnly
+        query.cachePolicy = KPFCachePolicyNetworkOnly
       else
         query.cachePolicy = self.class.cache_policy if self.class.cache_policy        
       end
