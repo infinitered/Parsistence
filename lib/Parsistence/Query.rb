@@ -162,7 +162,6 @@ module Parsistence
       query
     end
 
-    # TODO: Get this working.
     def count(&callback)
       query = createQuery
       error = Pointer.new(:object)
