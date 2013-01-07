@@ -200,8 +200,9 @@ module Parsistence
       query.findObjectsInBackgroundWithBlock (lambda { |items, error|
         modelItems = []
         modelItems = items.map! { |item| myKlass.new(item) } if items
-        arguments = [modelItems, error].first(callback.arity)
-        callback.call *arguments
+        callback.call(modelItems, error)  if callback.arity == 2
+        callback.call(modelItems)         if callback.arity == 1
+        callback.call                     if callback.arity == 0
       })
 
       self
@@ -221,8 +222,9 @@ module Parsistence
       myKlass = self.klass
       query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
         modelItem = myKlass.new(item) if item
-        arguments = [modelItems, error].first(callback.arity)
-        callback.call *arguments
+        callback.call(modelItem, error)  if callback.arity == 2
+        callback.call(modelItem)         if callback.arity == 1
+        callback.call                     if callback.arity == 0
       })
 
       self
