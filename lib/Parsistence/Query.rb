@@ -172,6 +172,8 @@ module Parsistence
           callback.call item_count
         end
       }
+
+      self
     end
 
     def fetch(&callback)
@@ -200,6 +202,8 @@ module Parsistence
         modelItems = items.map! { |item| myKlass.new(item) } if items
         callback.call modelItems, error
       })
+
+      self
     end
 
     # @deprecated
@@ -218,6 +222,8 @@ module Parsistence
         modelItem = myKlass.new(item) if item
         callback.call modelItem, error
       })
+
+      self
     end
 
     # @deprecated
