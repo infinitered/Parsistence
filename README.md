@@ -1,3 +1,9 @@
+# This repository is no longer maintained.
+
+If you'd like to take over Parsistence, get in touch with us. But we are no longer using it and have no plans to continue supporting it.
+
+- The ClearSight Studio team
+
 # About
 
 Parsistence provides an ActiveRecord/Persistence.js pattern to your Parse.com models on RubyMotion. 
