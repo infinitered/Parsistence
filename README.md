@@ -1,12 +1,6 @@
-# This repository is no longer maintained.
-
-If you'd like to take over Parsistence, get in touch with us. But we are no longer using it and have no plans to continue supporting it.
-
-- The ClearSight Studio team
-
 # About
 
-Parsistence provides an ActiveRecord/Persistence.js pattern to your Parse.com models on RubyMotion. 
+Parsistence provides an ActiveRecord/Persistence.js pattern to your Parse.com models on RubyMotion.
 It's an early fork from [ParseModel](https://github.com/adelevie/ParseModel) by
 Alan deLevie but goes a different direction with its implementation.
 
@@ -36,6 +30,19 @@ p.saveEventually
 ```
 
 `Parsistence::Model` objects will `respond_to?` to all methods available to [`PFObject`](https://parse.com/docs/ios/api/Classes/PFObject.html) in the Parse iOS SDK, as well as 'fields' getters and setters. You can also access the `PFObject` instance directly with, you guessed it, `Parsistence::Model#PFObject`.
+
+If you pass in a PFObject instance, it'll use that:
+
+```ruby
+p = Post.new(pf_post)
+```
+
+If you pass in a hash, it'll set properties automatically:
+
+```ruby
+p = Post.new(title: "Awesome")
+p.title # => "Awesome"
+```
 
 ### Users
 

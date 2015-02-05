@@ -1,23 +1,27 @@
 module Parsistence
   module Model
     attr_accessor :PFObject, :errors
-    
+
     RESERVED_KEYS = [:objectId]
 
     def initialize(pf=nil)
-      if pf
+      if pf && !pf.is_a?(Hash)
         self.PFObject = pf
       else
         self.PFObject = PFObject.objectWithClassName(self.class.to_s)
       end
-
+      if pf.is_a?(Hash)
+        pf.each do |k, v|
+          self.send("#{k}=", v) if self.respond_to?("#{k}=")
+        end
+      end
       self
     end
-    
+
     def method_missing(method, *args, &block)
       method = method.to_sym
       setter = false
-      
+
       if setter?(method)
         setter = true
         method = method.split("=")[0].to_sym
@@ -55,7 +59,7 @@ module Parsistence
     end
 
     # Override of ruby's respond_to?
-    # 
+    #
     # @param [Symbol] method
     # @return [Bool] true/false
     def respond_to?(method)
@@ -68,7 +72,7 @@ module Parsistence
       return true if fields.include?(method) || relations.include?(method)
 
       super
-    end 
+    end
 
     def fields
       self.class.send(:get_fields)
@@ -126,12 +130,12 @@ module Parsistence
       elsif belongs_to.include?(field.to_sym)
         return setField(field, value)
       end
-      
+
       raise "Parsistence Exception: Invalid relation name #{field} for object #{self.class.to_s}"
     end
 
     # Returns all of the attributes of the Model
-    # 
+    #
     # @return [Hash] attributes of Model
     def attributes
       attributes = {}
@@ -142,7 +146,7 @@ module Parsistence
     end
 
     # Sets the attributes of the Model
-    # 
+    #
     # @param [Hash] attrs to set on the Model
     # @return [Hash] that you gave it
     # @note will throw an error if a key is invalid
@@ -151,7 +155,7 @@ module Parsistence
         if v.respond_to?(:each) && !v.is_a?(PFObject)
           self.attributes = v
         elsif self.respond_to? "#{k}="
-          self.send("#{k}=", v) 
+          self.send("#{k}=", v)
         else
           setField(k, v) unless k.nil?
         end
@@ -163,7 +167,7 @@ module Parsistence
     # @note calls before/after_save hooks
     # @note before_save MUST return true, or save will not be called on PFObject
     # @note does not save if validations fail
-    # 
+    #
     # @return [Bool] true/false
     def save
       saved = false
@@ -232,10 +236,10 @@ module Parsistence
       @errors ||= {}
       if presenceValidations.include?(field) && (value.nil? || value == "")
         messages = presenceValidationMessages
-        if messages.include?(field) 
+        if messages.include?(field)
           @errors[field] = messages[field]
         else
-          @errors[field] = "#{field} can't be blank" 
+          @errors[field] = "#{field} can't be blank"
         end
       end
     end
@@ -261,7 +265,7 @@ module Parsistence
     end
 
     module ClassMethods
-      
+
       # set the fields for the current Model
       #   used in method_missing
       #
@@ -269,7 +273,7 @@ module Parsistence
       def fields(*args)
         args.each {|arg| field(arg)}
       end
-    
+
       # set a field for the current Model
       #
       # @param [Symbol] name of field
@@ -279,7 +283,7 @@ module Parsistence
         @fields << name.to_sym
         @fields.uniq!
       end
-      
+
       def get_fields
         @fields ||= []
       end
@@ -341,7 +345,7 @@ module Parsistence
       end
 
       # require a certain field to be present (not nil And not an empty String)
-      # 
+      #
       # @param [Symbol, Hash] field and options (now only has message)
       def validates_presence_of(field, opts={})
         @presenceValidationMessages ||= {}
@@ -352,7 +356,7 @@ module Parsistence
       def get_presence_validations
         @presenceValidations ||= {}
       end
-      
+
       def get_presence_validation_messages
         @presenceValidationMessages ||= {}
       end
@@ -362,7 +366,7 @@ module Parsistence
         @presenceValidations << field
       end
    end
-    
+
     def self.included(base)
       base.extend(ClassMethods)
     end
