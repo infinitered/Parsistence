@@ -101,13 +101,13 @@ module Parsistence
       elsif @cached == false
         query.cachePolicy = KPFCachePolicyNetworkOnly
       else
-        query.cachePolicy = self.class.cache_policy if self.class.cache_policy        
+        query.cachePolicy = self.class.cache_policy if self.class.cache_policy
       end
 
       @includes.each do |include|
         query.includeKey(include)
       end
-      
+
       @conditions.each do |key, value|
         checkKey key
         value = value.PFObject if value.respond_to?(:PFObject)
@@ -178,26 +178,26 @@ module Parsistence
 
     def fetch(&callback)
       if @limit && @limit == 1
-        fetchOne(&callback) 
+        fetchOne(&callback)
       else
         fetchAll(&callback)
       end
-      
+
       self
     end
 
     # @deprecated
     # Grab all results that match query
-    # 
+    #
     # @param [Block] callback block
     # @return [Nil]
-    # 
+    #
     # (see #all)
     def fetchAll(&callback)
       query = createQuery
-      
+
       myKlass = self.klass
-      query.findObjectsInBackgroundWithBlock (lambda { |items, error|
+      query.findObjectsInBackgroundWithBlock (->(items, error) {
         modelItems = []
         modelItems = items.map! { |item| myKlass.new(item) } if items
         callback.call(modelItems, error)  if callback.arity == 2
@@ -210,21 +210,19 @@ module Parsistence
 
     # @deprecated
     # Grab first result that matches query
-    # 
+    #
     # @param [Block] callback block
     # @return [Nil]
-    # 
+    #
     # (see #first)
     def fetchOne(&callback)
       limit(0, 1)
       query = createQuery
-      
+
       myKlass = self.klass
-      query.getFirstObjectInBackgroundWithBlock (lambda { |item, error|
-        modelItem = myKlass.new(item) if item
-        callback.call(modelItem, error)  if callback.arity == 2
-        callback.call(modelItem)         if callback.arity == 1
-        callback.call                     if callback.arity == 0
+      query.getFirstObjectInBackgroundWithBlock (lambda { |item|
+        item = myKlass.new(item) if item
+        callback.call(item)
       })
 
       self
@@ -239,7 +237,7 @@ module Parsistence
     end
 
     # Grab all results that match query
-    # 
+    #
     # @param [Block] callback block
     # @return [Nil]
     def all(&callback)
@@ -248,14 +246,14 @@ module Parsistence
     end
 
     # Grab first result that matches query
-    # 
+    #
     # @param [Block] callback block
     # @return [Nil]
     def first(&callback)
       fetchOne(&callback)
       nil
     end
-    
+
     # Prints current Query conditions to STDERR
     def showQuery
       $stderr.puts "Conditions: #{@conditions.to_s}"
@@ -271,7 +269,7 @@ module Parsistence
     end
 
     # Limit number of results
-    # 
+    #
     # @param [Integer] offset value
     # @param [Integer] number of results to limit, if not passed, first arg is used for limit
     # @return [Object] self
@@ -286,7 +284,7 @@ module Parsistence
     end
 
     # Order query results
-    # 
+    #
     # @param [Hash] fields - order-direction
     # @return [Object] self
     def order(*fields)
@@ -297,7 +295,7 @@ module Parsistence
     end
 
     # Query for fields where key == value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def eq(*fields)
@@ -308,7 +306,7 @@ module Parsistence
     end
 
     # Query for fields where key != value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def notEq(*fields)
@@ -319,7 +317,7 @@ module Parsistence
     end
 
     # Query for fields where key < value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def lt(*fields)
@@ -330,7 +328,7 @@ module Parsistence
     end
 
     # Query for fields where key > value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def gt(*fields)
@@ -341,7 +339,7 @@ module Parsistence
     end
 
     # Query for fields where key is in an array of values
-    # 
+    #
     # @param [Hash] fields key-value pairs, value is an array
     # @return [Object] self
     def in(*fields)
@@ -352,7 +350,7 @@ module Parsistence
     end
 
     # Query for fields where key <= value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def lte(*fields)
@@ -363,7 +361,7 @@ module Parsistence
     end
 
     # Query for fields where key >= value
-    # 
+    #
     # @param [Hash] fields key-value pairs
     # @return [Object] self
     def gte(*fields)
@@ -379,7 +377,7 @@ module Parsistence
     end
 
     # Include related object in query
-    # 
+    #
     # @param [Hash] fields
     # @return [Object] self
     def includes(*fields)

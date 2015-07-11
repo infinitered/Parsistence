@@ -6,6 +6,7 @@ module Parsistence
 
     def initialize(pf=nil)
       if pf && !pf.is_a?(Hash)
+        pf = pf.to_object if pf.is_a?(Pointer)
         self.PFObject = pf
       else
         self.PFObject = PFObject.objectWithClassName(self.class.to_s)
