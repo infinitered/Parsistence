@@ -197,7 +197,7 @@ module Parsistence
       query = createQuery
 
       myKlass = self.klass
-      query.findObjectsInBackgroundWithBlock (->(items) {
+      query.findObjectsInBackgroundWithBlock (->(items, error) {
         modelItems = []
         modelItems = items.map! { |item| myKlass.new(item) } if items
         callback.call(modelItems)         if callback.arity == 1
@@ -219,7 +219,7 @@ module Parsistence
       query = createQuery
 
       myKlass = self.klass
-      query.getFirstObjectInBackgroundWithBlock (lambda { |item|
+      query.getFirstObjectInBackgroundWithBlock (->(item, error) {
         item = myKlass.new(item) if item
         callback.call(item)
       })
