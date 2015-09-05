@@ -3,8 +3,8 @@ module Parsistence
     include Parsistence::Model
 
     attr_accessor :PFUser
-    
-    RESERVED_KEYS = [:objectId, :username, :password, :email]
+
+    RESERVED_KEYS = [:objectId, :username, :password, :email, :createdAt, :updatedAt]
 
     def initialize(pf=nil)
       if pf
@@ -15,12 +15,12 @@ module Parsistence
 
       self
     end
-    
+
     def PFObject=(value)
       @PFObject = value
       @PFUser = @PFObject
     end
-    
+
     def PFUser=(value)
       self.PFObject = value
     end
@@ -53,7 +53,7 @@ module Parsistence
         users = query.findObjects
         users
       end
-      
+
       def currentUser
         return PFUser.currentUser if PFUser.currentUser
         nil

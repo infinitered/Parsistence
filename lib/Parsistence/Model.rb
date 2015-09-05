@@ -2,7 +2,7 @@ module Parsistence
   module Model
     attr_accessor :PFObject, :errors
 
-    RESERVED_KEYS = [:objectId]
+    RESERVED_KEYS = [:objectId, :createdAt, :updatedAt]
 
     def initialize(pf=nil)
       if pf && !pf.is_a?(Hash)
