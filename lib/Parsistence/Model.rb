@@ -19,6 +19,18 @@ module Parsistence
       self
     end
 
+    def createdAt
+      d = self.PFObject.createdAt
+      d = d.first if d.is_a?(Array)
+      d
+    end
+
+    def updatedAt
+      d = self.PFObject.updatedAt
+      d = d.first if d.is_a?(Array)
+      d
+    end
+
     def method_missing(method, *args, &block)
       method = method.to_sym
       setter = false
