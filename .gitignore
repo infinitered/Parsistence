@@ -3,3 +3,7 @@
 .repl_history
 Gemfile.lock
 pkg/*
+build
+tags
+vendor/Pods
+.DS_Store
