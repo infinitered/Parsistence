@@ -1,3 +1,10 @@
+# Parse.com is shutting down.
+
+Due to this [sad announcement](http://blog.parse.com/announcements/moving-on/), we will no longer support Parsistence. You're free to continue to use it as long as you wish, and perhaps Parsistence can be modified to work with any self-hosted Parse Server instance, but that will be up to the community.
+
+Jamon Holmgren
+January 28, 2016
+
 # About
 
 Parsistence provides an ActiveRecord/Persistence.js pattern to your Parse.com models on RubyMotion.
