@@ -233,6 +233,18 @@ Parse.setApplicationId("1234567890", clientKey:"abcdefghijk")
 
 To install the Parse iOS SDK in your RubyMotion project, read [this](http://www.rubymotion.com/developer-center/guides/project-management/#_using_3rd_party_libraries) and  [this](http://stackoverflow.com/a/10453895/94154).
 
+## Testing
+You will need to install the Parse SDK to run the tests. Installation is done via Cocoapods.
+```
+bundle
+rake pod:install
+```
+
+You must also provide the Parse App ID and Client Key as environment variables when running the tests.
+```
+PARSE_APPLICATION_ID="yourappid" PARSE_CLIENT_KEY="yourclientkey" rake spec
+```
+
 ## License
 
 See LICENSE.txt
